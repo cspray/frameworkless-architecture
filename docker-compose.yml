@@ -1,0 +1,37 @@
+version: '2'
+volumes:
+  pg_data:
+  vendor:
+services:
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - 'pg_data:/var/lib/postgresql/data'
+  vendor:
+    image: busybox
+    volumes:
+      - '.:/usr/src/myapp'
+      - 'vendor:/usr/src/vendor'
+  app:
+    build: .
+    command: bash -c 'php -S 0.0.0.0:4300 main.php'
+    expose:
+      - "9000"
+    ports:
+      - "4300:4300"
+    depends_on:
+      - postgres
+    tmpfs:
+      - /usr/src/myapp/log
+      - /usr/src/myapp/tmp
+    volumes_from:
+      - vendor
+    environment: &environment
+      - DATABASE_URL=postgresql://postgres@postgres?pool=25
+      - PATH=/usr/src/myapp/bin:/usr/src/myapp/vendor/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      - XDEBUG_CONFIG="remote_host=192.168.2.5"
+    stdin_open: true
+    tty: true

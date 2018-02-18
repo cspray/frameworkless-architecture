@@ -1,0 +1,13 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                    http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="Cspray\ArchDemo\Entity\Trainer" table="trainers" repository-class="Cspray\ArchDemo\Repository\TrainerRepository">
+        <id name="id" type="uuid" />
+
+        <field name="name" type="string" />
+        <field name="specialty" type="string" />
+    </entity>
+
+</doctrine-mapping>
