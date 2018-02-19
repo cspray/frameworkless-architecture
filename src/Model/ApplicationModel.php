@@ -67,7 +67,7 @@ abstract class ApplicationModel {
     }
 
     protected function doSave(Entity $entity) : bool {
-        $isValid = $this->isValid($entity);
+        $isValid = $this->doIsValidCheck($entity);
         if ($isValid) {
             $this->entityManager->persist($entity);
             $this->entityManager->flush();

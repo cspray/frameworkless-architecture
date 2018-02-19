@@ -48,11 +48,11 @@ class DogModel extends ApplicationModel {
     }
 
     public function save(Dog $dog) : bool {
-        return parent::doSave($dog);
+        return $this->doSave($dog);
     }
 
     public function isValid(Dog $dog) : bool {
-        return parent::doIsValidCheck($dog);
+        return $this->doIsValidCheck($dog);
     }
 
 }

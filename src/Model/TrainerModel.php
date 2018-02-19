@@ -44,11 +44,11 @@ class TrainerModel extends ApplicationModel {
     }
 
     public function save(Trainer $trainer) : bool {
-        return parent::doSave($trainer);
+        return $this->doSave($trainer);
     }
 
     public function isValid(Trainer $trainer) : bool {
-        return parent::doIsValidCheck($trainer);
+        return $this->doIsValidCheck($trainer);
     }
 
 }

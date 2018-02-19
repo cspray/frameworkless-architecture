@@ -23,7 +23,7 @@ class ResolvedRoute {
 
     /**
      * @param ServerRequestInterface $request
-     * @param callable $controller
+     * @param ControllerAction $controllerAction
      * @param $httpStatus
      * @param array $availableMethods
      */

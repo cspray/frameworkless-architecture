@@ -128,9 +128,9 @@ class FastRouteRouter implements Router {
     }
 
     /**
-     * @param $method
-     * @param $pattern
-     * @param $handler
+     * @param string $method
+     * @param string $pattern
+     * @param ControllerAction $controllerAction
      * @return $this
      */
     public function addRoute(string $method, string $pattern, ControllerAction $controllerAction) : self {
@@ -207,7 +207,7 @@ class FastRouteRouter implements Router {
     /**
      * Returns the controller/action that will be invoked when the URL requested could not be found.
      *
-     * @return string
+     * @return ControllerAction
      */
     public function getNotFoundControllerAction() : ControllerAction {
         if (!$this->notFoundControllerAction) {
@@ -218,9 +218,7 @@ class FastRouteRouter implements Router {
     }
 
     /**
-     * This function GUARANTEES that a callable will always be returned.
-     *
-     * @return callable
+     * @return ControllerAction
      */
     public function getMethodNotAllowedControllerAction() : ControllerAction {
         if (!$this->methodNotFoundControllerAction) {

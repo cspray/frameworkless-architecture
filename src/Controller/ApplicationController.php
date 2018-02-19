@@ -18,7 +18,7 @@ abstract class ApplicationController {
         $this->fractal = $fractal;
     }
 
-    public function rescueFrom(Throwable $error) : ResponseInterface {
+    public function rescueFrom() : ResponseInterface {
         return new JsonResponse(['message' => 'Not Found'], HttpStatusCodes::NOT_FOUND);
     }
 

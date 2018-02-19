@@ -40,10 +40,10 @@ class ExerciseModel extends ApplicationModel {
     }
 
     public function save(Exercise $exercise) : bool {
-        return parent::doSave($exercise);
+        return $this->doSave($exercise);
     }
 
     public function isValid(Exercise $exercise) : bool {
-        return parent::doIsValidCheck($exercise);
+        return $this->doIsValidCheck($exercise);
     }
 }
