@@ -12,8 +12,12 @@ return function(string $environment = 'development') {
             $config['db.driver'] = 'pdo_pgsql';
             break;
         case 'test':
-            $config['db.host'] = 'postgres';
-            $config['db.host'] = 'postgres';
+            // handle CI database hose for test environment
+            $testHost = getenv('DB_HOST');
+            if (!$testHost) {
+                $testHost = 'postgres';
+            }
+            $config['db.host'] = $testHost;
             $config['db.name'] = 'archdemo_test';
             $config['db.user'] = 'postgres';
             $config['db.pass'] = '';

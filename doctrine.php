@@ -4,7 +4,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use Symfony\Component\Console\Helper\HelperSet;
 
-$environment = $_ENV['APP_ENV'] ?? 'development';
+$environment = getenv('APP_ENV');
+if (!$environment) {
+    $environment = 'development';
+}
 $injector = \Cspray\ArchDemo\bootstrap($environment);
 
 $entityManager = $injector->make(\Doctrine\ORM\EntityManagerInterface::class);
