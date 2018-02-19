@@ -28,22 +28,28 @@ Once you have the code installed on your machine go through the initial setup
 process:
 
 1. Run `docker-compose build` to build your containers.
-1. Get the app running with the PHP development server `docker-compose up`
+2. Get the app running with the PHP development server `docker-compose up`
 3. Create the initial PostgreSQL databases for both development and test environments
     
-    ```$xslt
+    ```
     docker-compose run postgres psql -h postgres -U postgres
     > CREATE DATABASE archdemo;
     > \q
     ```
     
-    ```$xslt
+    ```
     docker-compose -e APP_ENV=test run postgres psql -h postgres -U postgres
     > CREATE DATABASE archdemo_test;
     > \q
     ```
+ 4. Ensure the appropriate tables are created in both environments
+ 
+    ```
+    docker-compose run app vendor/bin/doctrine orm:schema-tool:create
+    docker-compose -e APP_ENV=test run app vendor/bin/doctrine orm:schema-tool:create
+    ```
     
- 4. Ensure tests runs and you can connect to interactive shell.
+ 5. Ensure tests runs and you can connect to interactive shell.
  
     ```$xslt
     docker-compose run app vendor/bin/phpunit
