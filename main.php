@@ -11,6 +11,8 @@ $injector->execute($routesFunction);
 $middlewaresFunction = require(__DIR__ . '/config/middlewares.php');
 $middlewares = new \Equip\Dispatch\MiddlewareCollection();
 
+$middlewares->append(new \Cspray\ArchDemo\Middleware\ParsedRequestBodyMiddleware());
+
 $injector->execute($middlewaresFunction, [':middlewares' => $middlewares]);
 
 $defaultHandler = function(\Psr\Http\Message\ServerRequestInterface $request) use($injector) {
@@ -18,7 +20,6 @@ $defaultHandler = function(\Psr\Http\Message\ServerRequestInterface $request) us
 };
 
 $request = \Zend\Diactoros\ServerRequestFactory::fromGlobals();
-$request = $request->withParsedBody(json_decode((string) $request->getBody(), true));
 $response = $middlewares->dispatch($request, $defaultHandler);
 
 $sapiEmitter = new \Zend\Diactoros\Response\SapiEmitter();
