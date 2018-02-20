@@ -3,6 +3,8 @@
 namespace Cspray\ArchDemo\Test;
 
 use Auryn\Injector;
+use Cspray\ArchDemo\Config\CorsConfig;
+use Cspray\ArchDemo\Config\DatabaseConfig;
 use Cspray\ArchDemo\Config\Environment;
 use Cspray\ArchDemo\Middleware\ControllerActionRequestHandler;
 use Cspray\ArchDemo\ObjectGraph;
@@ -16,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 class ObjectGraphTest extends TestCase {
 
     public function testInjectorShared() {
-        $environment = Environment::loadFromArray('development', ['db.driver' => 'pdo_sqlite']);
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
         $injector = (new ObjectGraph($environment))->createContainer();
 
         $injector2 = $injector->make(Injector::class);
@@ -25,7 +27,7 @@ class ObjectGraphTest extends TestCase {
     }
 
     public function testMakingRouterReturnsFastRouteRouter() {
-        $environment = Environment::loadFromArray('development', ['db.driver' => 'pdo_sqlite']);
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
         $injector = (new ObjectGraph($environment))->createContainer();
 
         $router = $injector->make(Router::class);
@@ -33,7 +35,7 @@ class ObjectGraphTest extends TestCase {
     }
 
     public function testMakingRouterSharesSameObject() {
-        $environment = Environment::loadFromArray('development', ['db.driver' => 'pdo_sqlite']);
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
         $injector = (new ObjectGraph($environment))->createContainer();
 
         $router1 = $injector->make(Router::class);
@@ -43,7 +45,7 @@ class ObjectGraphTest extends TestCase {
     }
 
     public function testMakingEntityManagerInterfaceReturnsImplementation() {
-        $environment = Environment::loadFromArray('development', ['db.driver' => 'pdo_sqlite']);
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
         $injector = (new ObjectGraph($environment))->createContainer();
 
         $manager = $injector->make(EntityManagerInterface::class);
@@ -51,7 +53,7 @@ class ObjectGraphTest extends TestCase {
     }
 
     public function testMakingEntityManagerSharesSameObject() {
-        $environment = Environment::loadFromArray('development', ['db.driver' => 'pdo_sqlite']);
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
         $injector = (new ObjectGraph($environment))->createContainer();
 
         $manager1 = $injector->make(EntityManagerInterface::class);
@@ -61,7 +63,7 @@ class ObjectGraphTest extends TestCase {
     }
 
     public function testMakingFractalManagerSharesSameObject() {
-        $environment = Environment::loadFromArray('development', ['db.driver' => 'pdo_sqlite']);
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
         $injector = (new ObjectGraph($environment))->createContainer();
 
         $manager1 = $injector->make(Manager::class);
@@ -71,7 +73,7 @@ class ObjectGraphTest extends TestCase {
     }
 
     public function testMakingControllerActionMiddlewareSharesSameObject() {
-        $environment = Environment::loadFromArray('development', ['db.driver' => 'pdo_sqlite']);
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
         $injector = (new ObjectGraph($environment))->createContainer();
 
         $handler1 = $injector->make(ControllerActionRequestHandler::class);
@@ -80,5 +82,32 @@ class ObjectGraphTest extends TestCase {
         $this->assertSame($handler1, $handler2);
     }
 
+    public function testMakingEnvironmentConfigSharesObject() {
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
+        $injector = (new ObjectGraph($environment))->createContainer();
 
+        $env1 = $injector->make(Environment::class);
+        $env2 = $injector->make(Environment::class);
+
+        $this->assertSame($env1, $env2);
+    }
+
+    public function testMakingCorsConfigSameFromEnvironmentConfig() {
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
+        $injector = (new ObjectGraph($environment))->createContainer();
+
+        $cors = $injector->make(CorsConfig::class);
+
+        $this->assertSame($environment->corsConfig(), $cors);
+    }
+
+
+    public function testMakingDatabaseConfigSameFromEnvironmentConfig() {
+        $environment = Environment::loadFromArray('development', ['db' => ['driver' => 'pdo_sqlite']]);
+        $injector = (new ObjectGraph($environment))->createContainer();
+
+        $cors = $injector->make(DatabaseConfig::class);
+
+        $this->assertSame($environment->databaseConfig(), $cors);
+    }
 }

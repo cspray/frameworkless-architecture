@@ -30,6 +30,9 @@ class ObjectGraph {
     public function createContainer() : Injector {
         $injector = new Injector();
         $injector->share($injector);
+        $injector->share($this->envConfig);
+        $injector->share($this->envConfig->databaseConfig());
+        $injector->share($this->envConfig->corsConfig());
         $this->routerGraph($injector);
         $this->doctrineGraph($injector);
         $this->fractalGraph($injector);
@@ -54,12 +57,13 @@ class ObjectGraph {
     }
 
     private function doctrineGraph(Injector $injector) {
+        $dbConfig = $this->envConfig->databaseConfig();
         $params = [
-            'driver' => $this->envConfig->databaseDriver(),
-            'user' => $this->envConfig->databaseUser(),
-            'password' => $this->envConfig->databasePassword(),
-            'dbname' => $this->envConfig->databaseName(),
-            'host' => $this->envConfig->databaseHost()
+            'driver' => $dbConfig->driver(),
+            'user' => $dbConfig->user(),
+            'password' => $dbConfig->password(),
+            'dbname' => $dbConfig->name(),
+            'host' => $dbConfig->host()
         ];
         $configPath = [dirname(__DIR__) . '/config/doctrine'];
         $isDev = true;

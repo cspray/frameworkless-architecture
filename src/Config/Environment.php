@@ -6,6 +6,8 @@ class Environment {
 
     private $environment;
     private $config;
+    private $dbConfig;
+    private $corsConfig;
 
     private function __construct(string $environment, array $data) {
         $this->environment = $environment;
@@ -23,27 +25,23 @@ class Environment {
     }
 
     public function environmentName() : string {
-        return $this->environment ?? '';
+        return $this->environment;
     }
 
-    public function databaseDriver() : string {
-        return $this->config['db.driver'] ?? '';
+    public function databaseConfig() : DatabaseConfig {
+        if (!$this->dbConfig) {
+            $this->dbConfig = new DatabaseConfig($this->config['db'] ?? []);
+        }
+
+        return $this->dbConfig;
     }
 
-    public function databaseName() : string {
-        return $this->config['db.name'] ?? '';
-    }
+    public function corsConfig() : CorsConfig {
+        if (!$this->corsConfig) {
+            $this->corsConfig = new CorsConfig($this->config['cors'] ?? []);
+        }
 
-    public function databaseHost() : string {
-        return $this->config['db.host'] ?? '';
-    }
-
-    public function databaseUser() : string {
-        return $this->config['db.user'] ?? '';
-    }
-
-    public function databasePassword() : string {
-        return $this->config['db.pass'] ?? '';
+        return $this->corsConfig;
     }
 
 }

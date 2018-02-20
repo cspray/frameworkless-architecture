@@ -31,4 +31,23 @@ class ControllerActionRequestHandlerTest extends TestCase {
         $this->assertSame($request, $controller->getRequest());
     }
 
+    public function testControllerGetsRequestFromResolvedRoute() {
+        $request = new ServerRequest();
+        $controllerAction = new ControllerAction(ControllerStub::class, 'action');
+        $injector = $this->getMockBuilder(Injector::class)->disableOriginalConstructor()->getMock();
+        $controller = new ControllerStub();
+        $injector->expects($this->once())->method('make')->with(ControllerStub::class)->willReturn($controller);
+
+        $router = $this->getMockBuilder(Router::class)->getMock();
+        $resolvedRequest = $request->withAttribute('id', 'something');
+        $resolvedRoute = new ResolvedRoute($resolvedRequest, $controllerAction, 200);
+        $router->expects($this->once())->method('match')->with($request)->willReturn($resolvedRoute);
+
+        $response = (new ControllerActionRequestHandler($router, $injector))->handle($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('From ControllerStub', (string) $response->getBody());
+        $this->assertSame($resolvedRequest, $controller->getRequest());
+    }
+
 }

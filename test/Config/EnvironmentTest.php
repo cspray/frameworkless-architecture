@@ -14,50 +14,89 @@ class EnvironmentTest extends TestCase {
         $this->dummyConfigPath = dirname(__DIR__) . '/_dummy_app/config/environment.php';
     }
 
-    public function environmentFileConfigProvider() {
+    public function testEnvironmentName() {
+        $environment = Environment::loadFromPhpFile('development', $this->dummyConfigPath);
+
+        $this->assertSame('development', $environment->environmentName());
+    }
+
+    public function environmentFileDatabaseConfigProvider() {
         return [
-            ['development', 'environmentName', 'development'],
-            ['development', 'databaseDriver', 'dev-driver'],
-            ['development', 'databaseHost', 'dev-host'],
-            ['development', 'databaseName', 'dev-name'],
-            ['development', 'databaseUser', 'dev-user'],
-            ['development', 'databasePassword', 'dev-pass'],
-            ['test', 'environmentName', 'test'],
-            ['test', 'databaseDriver', 'test-driver'],
-            ['test', 'databaseHost', 'test-host'],
-            ['test', 'databaseName', 'test-name'],
-            ['test', 'databaseUser', 'test-user'],
-            ['test', 'databasePassword', 'test-pass']
+            ['development', 'driver', 'dev-driver'],
+            ['development', 'host', 'dev-host'],
+            ['development', 'name', 'dev-name'],
+            ['development', 'user', 'dev-user'],
+            ['development', 'password', 'dev-pass'],
+            ['test', 'driver', 'test-driver'],
+            ['test', 'host', 'test-host'],
+            ['test', 'name', 'test-name'],
+            ['test', 'user', 'test-user'],
+            ['test', 'password', 'test-pass']
         ];
     }
 
     /**
-     * @dataProvider environmentFileConfigProvider
+     * @dataProvider environmentFileDatabaseConfigProvider
      */
-    public function testLoadFromFileRespectsEnvironment(string $environment, string $method, string $expected) {
+    public function testLoadFromFileDatabaseConfig(string $environment, string $method, string $expected) {
         $config = Environment::loadFromPhpFile($environment, $this->dummyConfigPath);
+        $dbConfig = $config->databaseConfig();
 
-        $this->assertSame($expected, $config->$method());
+        $this->assertSame($expected, $dbConfig->$method());
     }
 
-    public function environmentArrayConfigProvider() {
+    public function environmentFileCorsConfigProvider() {
         return [
-            ['development', [], 'environmentName', 'development'],
-            ['development', ['db.driver' => 'array-driver'], 'databaseDriver', 'array-driver'],
-            ['development', ['db.host' => 'array-host'], 'databaseHost', 'array-host'],
-            ['development', ['db.name' => 'array-name'], 'databaseName', 'array-name'],
-            ['development', ['db.user' => 'array-user'], 'databaseUser', 'array-user'],
-            ['development', ['db.pass' => 'array-pass'], 'databasePassword', 'array-pass'],
+            ['development', 'preflightCacheMaxAge', 12345],
+            ['development', 'forceAddAllowedMethodsToPreflightResponse', true],
+            ['development', 'forceAddAllowedHeadersToPreflightResponse', true],
+            ['development', 'forceCheckHost', true],
+            ['development', 'requestCredentialsSupported', true],
+            ['development', 'allowedOrigins', ['a' => true, 'b' => false, 'c' => null]],
+            ['development', 'allowedMethods', ['GET' => true, 'POST' => false, 'DELETE' => null]],
+            ['development', 'allowedHeaders', ['a' => true, 'b' => false, 'c' => null]],
+            ['development', 'responseExposedHeaders', ['z' => true, 'y' => false, 'x' => null]]
         ];
     }
 
     /**
-     * @dataProvider environmentArrayConfigProvider
+     * @dataProvider environmentFileCorsConfigProvider
+     */
+    public function testLoadFromFileCorsConfig(string $environment, string $method, $expected) {
+        $config = Environment::loadFromPhpFile($environment, $this->dummyConfigPath);
+        $corsConfig = $config->corsConfig();
+
+        $this->assertSame($expected, $corsConfig->$method());
+    }
+
+    public function testLoadFromFileCorsServerOrigin() {
+        $config = Environment::loadFromPhpFile('development', $this->dummyConfigPath);
+        $corsConfig = $config->corsConfig();
+
+        $uri = $corsConfig->serverOrigin();
+
+        $this->assertSame('http', $uri->getScheme());
+        $this->assertSame('example.com', $uri->getHost());
+        $this->assertSame(1234, $uri->getPort());
+    }
+
+    public function environmentArrayDatabaseConfigProvider() {
+        return [
+            ['development', ['db' => ['driver' => 'array-driver']], 'driver', 'array-driver'],
+            ['development', ['db' => ['host' => 'array-host']], 'host', 'array-host'],
+            ['development', ['db' => ['name' => 'array-name']], 'name', 'array-name'],
+            ['development', ['db' => ['user' => 'array-user']], 'user', 'array-user'],
+            ['development', ['db' => ['pass' => 'array-pass']], 'password', 'array-pass'],
+        ];
+    }
+
+    /**
+     * @dataProvider environmentArrayDatabaseConfigProvider
      */
     public function testLoadFromArray(string $environment, array $actualData, string $method, string $expected) {
         $config = Environment::loadFromArray($environment, $actualData);
-
-        $this->assertSame($expected, $config->$method());
+        $dbConfig = $config->databaseConfig();
+        $this->assertSame($expected, $dbConfig->$method());
     }
 
 }

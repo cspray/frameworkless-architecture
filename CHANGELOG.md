@@ -16,3 +16,4 @@ handle working with Entities.
 - Provide several Entity objects representing a real life example of dog training
 - Provide a bootstrap method that ensures the appropriate object graph and 
 initialization procedures are started.
+- Provide ability to configure CORS and add a CORS middleware.

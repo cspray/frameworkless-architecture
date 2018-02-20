@@ -31,7 +31,8 @@ class DogController extends ApplicationController {
     }
 
     public function show(ServerRequestInterface $request) : ResponseInterface {
-        $dog = $this->dogModel->find(Uuid::fromString($request->getAttribute('id')));
+        $uuid = Uuid::fromString($request->getAttribute('id'));
+        $dog = $this->dogModel->find($uuid);
         return new JsonResponse($this->serialize($dog));
     }
 

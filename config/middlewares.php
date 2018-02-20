@@ -5,6 +5,14 @@
  * framework will be added regardless of anything provided here.
  */
 
-return function(\Equip\Dispatch\MiddlewareCollection $middlewares) {
+use Auryn\Injector;
+use Cspray\ArchDemo\Middleware\CorsMiddleware;
+use Equip\Dispatch\MiddlewareCollection;
+
+
+return function(MiddlewareCollection $middlewares, Injector $injector) {
+    $corsMiddleware = $injector->make(CorsMiddleware::class);
+
+    $middlewares->append($corsMiddleware);
 
 };

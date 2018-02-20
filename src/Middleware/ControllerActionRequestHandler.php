@@ -28,7 +28,7 @@ class ControllerActionRequestHandler implements RequestHandlerInterface {
         $controller = $this->injector->make($controllerAction->getController());
         $action = $controllerAction->getAction();
 
-        return $controller->$action($request);
+        return $controller->$action($resolvedRoute->getRequest());
     }
 
 }

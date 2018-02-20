@@ -5,11 +5,27 @@ return function(string $environment = 'development') {
 
     switch ($environment) {
         case 'development':
-            $config['db.host'] = 'postgres';
-            $config['db.name'] = 'archdemo';
-            $config['db.user'] = 'postgres';
-            $config['db.pass'] = '';
-            $config['db.driver'] = 'pdo_pgsql';
+            $config['db'] = [
+                'host' => 'postgres',
+                'port' => 5433,
+                'name' => 'archdemo',
+                'user' => 'postgres',
+                'pass' => '',
+                'driver' => 'pdo_pgsql'
+            ];
+
+            $config['cors'] = [
+                'serverOrigin' => 'http://localhost:3000',
+                'allowedOrigins' => [
+                    'http://127.0.0.1:4200' => true
+                ],
+                'allowedMethods' => [
+                    'GET' => true,
+                    'PUT' => true,
+                    'POST' => true,
+                    'DELETE' => true
+                ]
+            ];
             break;
         case 'test':
             // handle CI database hose for test environment
@@ -17,18 +33,23 @@ return function(string $environment = 'development') {
             if (!$testHost) {
                 $testHost = 'postgres';
             }
-            $config['db.host'] = $testHost;
-            $config['db.name'] = 'archdemo_test';
-            $config['db.user'] = 'postgres';
-            $config['db.pass'] = '';
-            $config['db.driver'] = 'pdo_pgsql';
+            $config['db'] = [
+                'host' => $testHost,
+                'name' => 'archdemo_test',
+                'user' => 'postgres',
+                'pass' => '',
+                'driver' => 'pdo_pgsql'
+            ];
             break;
         case 'production':
-            $config['db.host'] = getenv('DB_HOST');
-            $config['db.name'] = getenv('DB_NAME');
-            $config['db.user'] = getenv('DB_USER');
-            $config['db.pass'] = getenv('DB_PASS');
-            $config['db.driver'] = getenv('DB_DRIVER');
+            $config['db'] = [
+                'host' => getenv('DB_HOST'),
+                'name' => getenv('DB_NAME'),
+                'user' => getenv('DB_USER'),
+                'pass' => getenv('DB_PASS'),
+                'driver' => getenv('DB_DRIVER')
+            ];
+
             break;
     }
 
