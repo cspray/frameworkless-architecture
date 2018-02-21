@@ -4,7 +4,7 @@ namespace Cspray\ArchDemo\Controller;
 
 use Cspray\ArchDemo\Entity\Dog;
 use Cspray\ArchDemo\HttpStatusCodes;
-use Cspray\ArchDemo\Model\DogModel;
+use Cspray\ArchDemo\Repository\DogRepository;
 use Cspray\ArchDemo\Transformer\DogTransformer;
 use League\Fractal;
 use League\Fractal\TransformerAbstract as FractalTransformer;
@@ -13,38 +13,37 @@ use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid\Uuid;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\JsonResponse;
-use Zend\Diactoros\Response\TextResponse;
 
 class DogController extends ApplicationController {
 
-    private $dogModel;
+    private $dogRepository;
     private $transformer;
 
-    public function __construct(DogModel $dogModel, Fractal\Manager $fractal) {
+    public function __construct(DogRepository $dogRepository, Fractal\Manager $fractal) {
         parent::__construct($fractal);
-        $this->dogModel = $dogModel;
+        $this->dogRepository = $dogRepository;
     }
 
     public function index() : ResponseInterface {
-        $dogs = $this->dogModel->all();
+        $dogs = $this->dogRepository->findAll();
         return new JsonResponse($this->serialize($dogs));
     }
 
     public function show(ServerRequestInterface $request) : ResponseInterface {
         $uuid = Uuid::fromString($request->getAttribute('id'));
-        $dog = $this->dogModel->find($uuid);
+        $dog = $this->dogRepository->find($uuid);
         return new JsonResponse($this->serialize($dog));
     }
 
     public function create(ServerRequestInterface $request) : ResponseInterface {
         $data = $request->getParsedBody()['dog'];
         $dog = (new Dog())->withName($data['name'])->withBreed($data['breed'])->withIncrementedAge($data['age']);
-        $this->dogModel->save($dog);
+        $this->dogRepository->save($dog);
         return new JsonResponse($this->serialize($dog), HttpStatusCodes::CREATED);
     }
 
     public function delete(ServerRequestInterface $request) : ResponseInterface {
-        $this->dogModel->delete(Uuid::fromString($request->getAttribute('id')));
+        $this->dogRepository->delete(Uuid::fromString($request->getAttribute('id')));
         return new EmptyResponse();
     }
 

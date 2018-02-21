@@ -1,14 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Cspray\ArchDemo\Test\Model;
+namespace Cspray\ArchDemo\Test\Repository;
 
 use function Cspray\ArchDemo\bootstrap;
+use Cspray\ArchDemo\Entity\Dog;
 use Cspray\ArchDemo\Entity\Entity;
 use Cspray\ArchDemo\Entity\Exercise;
-use Cspray\ArchDemo\Exception\NotFoundException;
-use Cspray\ArchDemo\Model\ExerciseModel;
-use Cspray\ArchDemo\Test\Model\SharedExamples\CrudTest;
-use Doctrine\DBAL\Types\Type;
+use Cspray\ArchDemo\Repository\ExerciseRepository;
+use Cspray\ArchDemo\Test\Repository\SharedExamples\CrudTest;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\DbUnit\Database\Connection;
 use PHPUnit\DbUnit\DataSet\ArrayDataSet;
@@ -16,7 +15,7 @@ use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\TestCase as DbTestCase;
 use Ramsey\Uuid\Uuid;
 
-class ExerciseModelTest extends DbTestCase {
+class ExerciseRepositoryTest extends DbTestCase {
 
     use CrudTest;
 
@@ -39,11 +38,15 @@ class ExerciseModelTest extends DbTestCase {
     }
 
     protected function subject(): object {
-        return new ExerciseModel($this->entityManager);
+        return new ExerciseRepository($this->entityManager);
     }
 
     protected function tableName(): string {
         return 'exercises';
+    }
+
+    protected function entityClass(): string {
+        return Exercise::class;
     }
 
     protected function validEntity() : Entity {
@@ -52,6 +55,10 @@ class ExerciseModelTest extends DbTestCase {
 
     protected function invalidEntity(): Entity {
         return new Exercise();
+    }
+
+    protected function wrongTypeEntity(): Entity {
+        return new Dog();
     }
 
     /**
@@ -92,47 +99,5 @@ class ExerciseModelTest extends DbTestCase {
             ]
         ]);
     }
-
-    public function badStringProvider() {
-        return [
-            [''],
-            ['a'],
-            ['123'],
-            ['$&^*%&'],
-            [str_repeat('a', 51)]
-        ];
-    }
-
-    /**
-     * @param string $badName
-     * @dataProvider badStringProvider
-     */
-    public function testIsValidWithBadNames(string $badName) {
-        $exercise = (new Exercise())->withName($badName);
-        $subject = $this->subject();
-        $this->assertFalse($subject->isValid($exercise));
-        $this->assertArraySubset(['name' => 'Must contain only letters, spaces and be between 3 and 50 characters long'], $subject->errors());
-    }
-
-    public function badDescriptionProvider() {
-        return [
-            [''],
-            ['a'],
-            [123],
-            [str_repeat('a', 10000)]
-        ];
-    }
-
-    /**
-     * @param string $badDescription
-     * @dataProvider badDescriptionProvider
-     */
-    public function testIsValidWithBadDescriptions(string $badDescription) {
-        $exercise = (new Exercise())->withDescription($badDescription);
-        $subject = $this->subject();
-        $this->assertFalse($subject->isValid($exercise));
-        $this->assertArraySubset(['description' => 'Must be greater than 3 and fewer than 1,000 characters long'], $subject->errors());
-    }
-
 
 }

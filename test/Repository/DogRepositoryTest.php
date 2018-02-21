@@ -1,13 +1,14 @@
 <?php declare(strict_types=1);
 
 
-namespace Cspray\ArchDemo\Test\Model;
+namespace Cspray\ArchDemo\Test\Repository;
 
 use function Cspray\ArchDemo\bootstrap;
 use Cspray\ArchDemo\Entity\Dog;
 use Cspray\ArchDemo\Entity\Entity;
-use Cspray\ArchDemo\Model\DogModel;
-use Cspray\ArchDemo\Test\Model\SharedExamples\CrudTest;
+use Cspray\ArchDemo\Entity\Trainer;
+use Cspray\ArchDemo\Repository\DogRepository;
+use Cspray\ArchDemo\Test\Repository\SharedExamples\CrudTest;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\DbUnit\Database\Connection;
 use PHPUnit\DbUnit\DataSet\ArrayDataSet;
@@ -15,7 +16,7 @@ use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\TestCase as DbTestCase;
 use Ramsey\Uuid\Uuid;
 
-class DogModelTest extends DbTestCase {
+class DogRepositoryTest extends DbTestCase {
 
     use CrudTest;
 
@@ -38,11 +39,15 @@ class DogModelTest extends DbTestCase {
     }
 
     protected function subject() : object {
-        return new DogModel($this->entityManager);
+        return new DogRepository($this->entityManager);
     }
 
     protected function tableName(): string {
         return 'dogs';
+    }
+
+    protected function entityClass() : string {
+        return Dog::class;
     }
 
     protected function validEntity(): Entity {
@@ -51,6 +56,10 @@ class DogModelTest extends DbTestCase {
 
     protected function invalidEntity() : Entity {
         return (new Dog())->withName('2385798375')->withBreed('Whatever')->withIncrementedAge(1);
+    }
+
+    protected function wrongTypeEntity(): Entity {
+        return new Trainer();
     }
 
     /**
@@ -93,74 +102,6 @@ class DogModelTest extends DbTestCase {
                 ]
             ]
         ]);
-    }
-
-    // Validation tests
-    public function badStringProvider() {
-        return [
-            [''],
-            ['a'],
-            ['123'],
-            ['$&^*%&'],
-            [str_repeat('a', 51)]
-        ];
-    }
-
-    /**
-     * @param string $badName
-     * @dataProvider badStringProvider
-     */
-    public function testIsValidWithBadNames(string $badName) {
-        $dog = (new Dog())->withName($badName);
-
-        $subject = new DogModel($this->entityManager);
-
-        $this->assertFalse($subject->isValid($dog));
-        $this->assertArraySubset(['name' => 'Must contain only letters, spaces and be between 3 and 50 characters long'], $subject->errors());
-    }
-
-    /**
-     * @param string $badBreed
-     * @dataProvider badStringProvider
-     */
-    public function testIsValidWithBadBreed(string $badBreed) {
-        $dog = (new Dog())->withBreed($badBreed);
-
-        $subject = new DogModel($this->entityManager);
-
-        $this->assertFalse($subject->isValid($dog));
-        $this->assertArraySubset(['breed' => 'Must contain only letters, spaces and be between 3 and 50 characters long'], $subject->errors());
-    }
-
-    public function badAgeProvider() {
-        return [
-            [-1],
-            [0],
-            [50],
-            [0.5]
-        ];
-    }
-
-    /**
-     * @param int $age
-     * @dataProvider badAgeProvider
-     */
-    public function testIsValidWithBadAge(int $age) {
-        $dog = (new Dog())->withIncrementedAge($age);
-
-        $subject = new DogModel($this->entityManager);
-
-        $this->assertFalse($subject->isValid($dog));
-        $this->assertArraySubset(['age' => 'Must be a positive number greater than 0 and less than or equal to 50'], $subject->errors());
-    }
-
-    public function testIsValidWithGoodData() {
-        $dog = (new Dog())->withName('Missy')->withBreed('Chihuahua')->withIncrementedAge(13);
-
-        $subject = new DogModel($this->entityManager);
-
-        $this->assertTrue($subject->isValid($dog));
-        $this->assertEmpty($subject->errors());
     }
 
 }

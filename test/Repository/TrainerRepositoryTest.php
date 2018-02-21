@@ -1,17 +1,14 @@
 <?php declare(strict_types=1);
 
 
-namespace Cspray\ArchDemo\Test\Model;
+namespace Cspray\ArchDemo\Test\Repository;
 
 use function Cspray\ArchDemo\bootstrap;
-use Cspray\ArchDemo\Config\Environment;
+use Cspray\ArchDemo\Entity\Dog;
 use Cspray\ArchDemo\Entity\Entity;
 use Cspray\ArchDemo\Entity\Trainer;
-use Cspray\ArchDemo\Exception\NotFoundException;
-use Cspray\ArchDemo\Model\TrainerModel;
-use Cspray\ArchDemo\ObjectGraph;
-use Cspray\ArchDemo\Test\Model\SharedExamples\CrudTest;
-use Doctrine\DBAL\Types\Type;
+use Cspray\ArchDemo\Repository\TrainerRespository;
+use Cspray\ArchDemo\Test\Repository\SharedExamples\CrudTest;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\DbUnit\Database\Connection;
 use PHPUnit\DbUnit\DataSet\ArrayDataSet;
@@ -19,7 +16,7 @@ use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\TestCase as DbTestCase;
 use Ramsey\Uuid\Uuid;
 
-class TrainerModelTest extends DbTestCase {
+class TrainerRepositoryTest extends DbTestCase {
 
     use CrudTest;
 
@@ -42,11 +39,15 @@ class TrainerModelTest extends DbTestCase {
     }
 
     protected function subject() : object {
-        return new TrainerModel($this->entityManager);
+        return new TrainerRespository($this->entityManager);
     }
 
     protected function tableName(): string {
         return 'trainers';
+    }
+
+    protected function entityClass(): string {
+        return Trainer::class;
     }
 
     protected function validEntity(): Entity {
@@ -55,6 +56,10 @@ class TrainerModelTest extends DbTestCase {
 
     protected function invalidEntity(): Entity {
         return (new Trainer())->withName('2385798375')->withSpecialty('Whatever');
+    }
+
+    protected function wrongTypeEntity(): Entity {
+        return new Dog();
     }
 
     /**
@@ -94,52 +99,6 @@ class TrainerModelTest extends DbTestCase {
                 ]
             ]
         ]);
-    }
-
-    // Validation tests
-    public function badStringProvider() {
-        return [
-            [''],
-            ['a'],
-            ['123'],
-            ['$&^*%&'],
-            [str_repeat('a', 51)]
-        ];
-    }
-
-    /**
-     * @param string $badName
-     * @dataProvider badStringProvider
-     */
-    public function testIsValidWithBadNames(string $badName) {
-        $Trainer = (new Trainer())->withName($badName);
-
-        $subject = new TrainerModel($this->entityManager);
-
-        $this->assertFalse($subject->isValid($Trainer));
-        $this->assertArraySubset(['name' => 'Must contain only letters, spaces and be between 3 and 50 characters long'], $subject->errors());
-    }
-
-    /**
-     * @param string $badBreed
-     * @dataProvider badStringProvider
-     */
-    public function testIsValidWithBadSpecialty(string $badBreed) {
-        $Trainer = (new Trainer())->withSpecialty($badBreed);
-
-        $subject = new TrainerModel($this->entityManager);
-
-        $this->assertFalse($subject->isValid($Trainer));
-        $this->assertArraySubset(['specialty' => 'Must contain only letters, spaces and be between 3 and 50 characters long'], $subject->errors());
-    }
-
-    public function testIsValidWithGoodData() {
-        $dog = (new Trainer())->withName('Missy')->withSpecialty('Small Dogs');
-
-        $subject = new TrainerModel($this->entityManager);
-
-        $this->assertTrue($subject->isValid($dog));
-        $this->assertEmpty($subject->errors());
     }
 
 }

@@ -2,8 +2,12 @@
 
 namespace Cspray\ArchDemo\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use Cspray\ArchDemo\Entity\Dog;
 
-class DogRepository extends EntityRepository {
+class DogRepository extends DoctrineAwareRepository implements Repository {
+
+    protected function getEntityClass(): string {
+        return Dog::class;
+    }
 
 }

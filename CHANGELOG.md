@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.0
+## v0.1.0 - 2018-02-??
 
 This release is an initial commit holding a fair amount of critical functionality
 
@@ -17,3 +17,6 @@ handle working with Entities.
 - Provide a bootstrap method that ensures the appropriate object graph and 
 initialization procedures are started.
 - Provide ability to configure CORS and add a CORS middleware.
+- Provide a Repository interface for dealing with CRUD actions involving an Entity. 
+Additionally introduces a DoctrineAwareRepository that simplifies integration 
+with Doctrine. 

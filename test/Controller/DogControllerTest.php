@@ -5,7 +5,7 @@ namespace Cspray\ArchDemo\Test\Controller;
 use Cspray\ArchDemo\Controller\DogController;
 use Cspray\ArchDemo\Entity\Dog;
 use Cspray\ArchDemo\Exception\NotFoundException;
-use Cspray\ArchDemo\Model\DogModel;
+use Cspray\ArchDemo\Repository\DogRepository;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use Zend\Diactoros\ServerRequest;
@@ -23,9 +23,9 @@ class DogControllerTest extends TestCase {
             $this->createDog('Kate', 'Pit Mix', 4),
             $this->createDog('Chief', 'Plott Hound', 3)
         ];
-        $mockDogModel = $this->getMockBuilder(DogModel::class)->disableOriginalConstructor()->getMock();
-        $mockDogModel->expects($this->once())->method('all')->willReturn(new ArrayObject($dogs));
-        $subject = new DogController($mockDogModel, new \League\Fractal\Manager());
+        $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
+        $mockDogRepository->expects($this->once())->method('findAll')->willReturn(new ArrayObject($dogs));
+        $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
 
         $response = $subject->index(new ServerRequest());
 
@@ -54,8 +54,8 @@ class DogControllerTest extends TestCase {
 
     public function testShowDogFound() {
         $dogId = Uuid::uuid4();
-        $mockDogModel = $this->getMockBuilder(DogModel::class)->disableOriginalConstructor()->getMock();
-        $mockDogModel->expects($this->once())
+        $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
+        $mockDogRepository->expects($this->once())
                      ->method('find')
                      ->with(
                          $this->callback(function($param) use($dogId) {
@@ -66,7 +66,7 @@ class DogControllerTest extends TestCase {
 
         $request = (new ServerRequest())->withAttribute('id', (string) $dogId);
 
-        $subject = new DogController($mockDogModel, new \League\Fractal\Manager());
+        $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
 
         $response = $subject->show($request);
 
@@ -83,13 +83,13 @@ class DogControllerTest extends TestCase {
 
     public function testShowDogNotFound() {
         $dogId = Uuid::uuid4();
-        $mockDogModel = $this->getMockBuilder(DogModel::class)->disableOriginalConstructor()->getMock();
-        $mockDogModel->expects($this->once())
+        $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
+        $mockDogRepository->expects($this->once())
                      ->method('find')
                      ->willThrowException(new NotFoundException("Could not find a dog matching id 9876."));
 
         $request = (new ServerRequest())->withAttribute('id', $dogId);
-        $subject = new DogController($mockDogModel, new \League\Fractal\Manager());
+        $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
 
         // emulating functionality we would expect to see in the controller dispatcher
         try {
@@ -105,8 +105,8 @@ class DogControllerTest extends TestCase {
     }
 
     public function testCreateValidDog() {
-        $mockDogModel = $this->getMockBuilder(DogModel::class)->disableOriginalConstructor()->getMock();
-        $mockDogModel->expects($this->once())
+        $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
+        $mockDogRepository->expects($this->once())
                      ->method('save')
                      ->with(
                          $this->callback(function($param) {
@@ -119,7 +119,7 @@ class DogControllerTest extends TestCase {
                      )->willReturn(true);
 
         $request = (new ServerRequest())->withParsedBody(['dog' => ['name' => 'Missy', 'breed' => 'Chihuahua', 'age' => 13]]);
-        $subject = new DogController($mockDogModel, new \League\Fractal\Manager());
+        $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
 
         $response = $subject->create($request);
 
@@ -136,8 +136,8 @@ class DogControllerTest extends TestCase {
 
     public function testDeleteDogFound() {
         $dogId = Uuid::uuid4();
-        $mockDogModel = $this->getMockBuilder(DogModel::class)->disableOriginalConstructor()->getMock();
-        $mockDogModel->expects($this->once())
+        $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
+        $mockDogRepository->expects($this->once())
             ->method('delete')
             ->with(
                 $this->callback(function($param) use($dogId) {
@@ -146,7 +146,7 @@ class DogControllerTest extends TestCase {
             );
 
         $request = (new ServerRequest())->withAttribute('id', $dogId);
-        $subject = new DogController($mockDogModel, new \League\Fractal\Manager());
+        $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
 
         $response = $subject->delete($request);
 
