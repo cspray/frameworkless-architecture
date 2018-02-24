@@ -15,36 +15,99 @@ class DogTest extends TestCase {
 
     public function setUp() {
         parent::setUp();
-        $this->subject = new Dog();
+        $this->subject = new Dog('', '', 0);
     }
 
     public function testWithName() {
         $dog = $this->subject->withName('Nick');
 
-        $this->assertNull($this->subject->getName());
+        $this->assertEmpty($this->subject->getName());
         $this->assertSame('Nick', $dog->getName());
-    }
-
-    public function testWithBreed() {
-        $dog = $this->subject->withBreed('Labrador Retriever');
-
-        $this->assertNull($this->subject->getBreed());
-        $this->assertSame('Labrador Retriever', $dog->getBreed());
     }
 
     public function testWithIncrementedAge() {
-        $dog = $this->subject->withIncrementedAge(1)->withIncrementedAge(1)->withIncrementedAge(1);
+        $dog = $this->subject->withAgedOneYear();
 
         $this->assertSame(0, $this->subject->getAge());
-        $this->assertSame(3, $dog->getAge());
+        $this->assertSame(1, $dog->getAge());
     }
 
     public function testAllThreeTogether() {
-        $dog = $this->subject->withName('Nick')->withBreed('Labrador Retriever')->withIncrementedAge(5);
+        $dog = (new Dog('Nick', 'Labrador Retriever', 0))->withAgedOneYear()->withAgedOneYear();
 
         $this->assertSame('Nick', $dog->getName());
         $this->assertSame('Labrador Retriever', $dog->getBreed());
-        $this->assertSame(5, $dog->getAge());
+        $this->assertSame(2, $dog->getAge());
+    }
+
+    public function testValidDog() {
+        $dog = new Dog('Nick Sprayberry', 'Labrador Retriever', 1);
+        $results = $dog->validate();
+        $this->assertTrue($results->isValid());
+    }
+
+    private function badStringsForAttribute(string $attribute) {
+        return [
+            ['', $attribute . ' must have a length between 3 and 50'],
+            ['a', $attribute . ' must have a length between 3 and 50'],
+            [str_repeat('x', 100), $attribute . ' must have a length between 3 and 50'],
+            ['*(^%#&*(^#%', $attribute . ' may only contain letters and spaces']
+        ];
+    }
+
+    public function invalidDogNameProvider() {
+        return $this->badStringsForAttribute('name');
+    }
+
+    /**
+     * @dataProvider invalidDogNameProvider
+     */
+    public function testInvalidDogName(string $actualName, string $expectedError) {
+        $dog = new Dog($actualName, 'Labrador Retriever', 1);
+        $results = $dog->validate();
+        $this->assertFalse($results->isValid());
+        $expected = ['name' => [
+            $expectedError
+        ]];
+        $this->assertSame($expected, $results->getErrorMessages());
+    }
+
+    public function invalidDogBreedProvider() {
+        return $this->badStringsForAttribute('breed');
+    }
+
+    /**
+     * @dataProvider invalidDogBreedProvider
+     */
+    public function testInvalidDogBreed(string $actualBreed, string $expectedError) {
+        $dog = new Dog('Kate Sprayberry', $actualBreed, 1);
+        $results = $dog->validate();
+        $this->assertFalse($results->isValid());
+        $expected = ['breed' => [
+            $expectedError
+        ]];
+        $this->assertSame($expected, $results->getErrorMessages());
+    }
+
+    public function invalidDogAgeProvider() {
+        return [
+            [0, 'age must be greater than 0'],
+            [-1, 'age must be greater than 0'],
+            [50, 'age must be less than 50']
+        ];
+    }
+
+    /**
+     * @dataProvider invalidDogAgeProvider
+     */
+    public function testInvalidDogAge(int $actualAge, string $expectedError) {
+        $dog = new Dog('Nick', 'Labrador Retriever', $actualAge);
+        $results = $dog->validate();
+        $this->assertFalse($results->isValid());
+        $expected = ['age' => [
+            $expectedError
+        ]];
+        $this->assertSame($expected, $results->getErrorMessages());
     }
 
 }

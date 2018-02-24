@@ -51,15 +51,15 @@ class DogRepositoryTest extends DbTestCase {
     }
 
     protected function validEntity(): Entity {
-        return (new Dog())->withName('Ginapher')->withBreed('Boxer')->withIncrementedAge(6);
+        return new Dog('Ginapher', 'Boxer', 6);
     }
 
     protected function invalidEntity() : Entity {
-        return (new Dog())->withName('2385798375')->withBreed('Whatever')->withIncrementedAge(1);
+        return new Dog('2385798375', 'whatever', 1);
     }
 
     protected function wrongTypeEntity(): Entity {
-        return new Trainer();
+        return new Trainer('', '');
     }
 
     /**

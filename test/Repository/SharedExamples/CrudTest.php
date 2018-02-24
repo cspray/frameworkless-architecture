@@ -69,7 +69,6 @@ trait CrudTest {
     }
 
     public function testSaveInvalidEntity() {
-        return $this->markTestSkipped("Skipping until Validatable implemented");
         $subject = $this->subject();
         $originalRowCount = $this->getConnection()->getRowCount($this->tableName());
         $this->assertFalse($subject->save($this->invalidEntity()));

@@ -15,20 +15,20 @@ class TrainerTest extends TestCase {
 
     public function setUp() {
         parent::setUp();
-        $this->subject = new Trainer();
+        $this->subject = new Trainer('', '');
     }
 
     public function testWithName() {
         $trainer = $this->subject->withName('Nick');
 
-        $this->assertNull($this->subject->getName());
+        $this->assertEmpty($this->subject->getName());
         $this->assertSame('Nick', $trainer->getName());
     }
 
     public function testWithSpecialty() {
         $trainer = $this->subject->withSpecialty('Protection');
 
-        $this->assertNull($this->subject->getSpecialty());
+        $this->assertEmpty($this->subject->getSpecialty());
         $this->assertSame('Protection', $trainer->getSpecialty());
     }
 
@@ -38,6 +38,61 @@ class TrainerTest extends TestCase {
 
         $this->assertSame('Nick', $trainer->getName());
         $this->assertSame('Agility', $trainer->getSpecialty());
+    }
+
+    public function testValidTrainer() {
+        $exercise = new Trainer('Br Christopher', 'Obedience training and dog-human relationship.');
+        $results = $exercise->validate();
+
+        $this->assertTrue($results->isValid());
+    }
+
+    public function invalidTrainerNameProvider() {
+        return [
+            ['', 'name must have a length between 3 and 50'],
+            ['a', 'name must have a length between 3 and 50'],
+            [str_repeat('x', 100), 'name must have a length between 3 and 50'],
+            ['*(^%#&*(^#%', 'name may only contain letters and spaces']
+        ];
+    }
+
+    /**
+     * @dataProvider invalidTrainerNameProvider
+     */
+    public function testInvalidTrainerName(string $actualName, string $expectedError) {
+        $trainer = new Trainer($actualName, 'A description of their specialty');
+        $results = $trainer->validate();
+
+        $this->assertFalse($results->isValid());
+        $expected = [
+            'name' => [
+                $expectedError
+            ]
+        ];
+        $this->assertSame($expected, $results->getErrorMessages());
+    }
+
+    public function invalidTrainerSpecialtyProvider() {
+        return [
+            ['', 'specialty must have a length between 10 and 500'],
+            [str_repeat('x', 600), 'specialty must have a length between 10 and 500']
+        ];
+    }
+
+    /**
+     * @dataProvider invalidTrainerSpecialtyProvider
+     */
+    public function testInvalidTrainerSpecialty(string $actualSpecialty, string $expectedError) {
+        $trainer = new Trainer('Br Christopher', $actualSpecialty);
+        $results = $trainer->validate();
+
+        $this->assertFalse($results->isValid());
+        $expected = [
+            'specialty' => [
+                $expectedError
+            ]
+        ];
+        $this->assertSame($expected, $results->getErrorMessages());
     }
 
 }

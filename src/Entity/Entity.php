@@ -2,7 +2,9 @@
 
 namespace Cspray\ArchDemo\Entity;
 
-interface Entity {
+use Cspray\ArchDemo\Validation\Validatable;
+
+interface Entity extends Validatable {
 
     public function getId();
 

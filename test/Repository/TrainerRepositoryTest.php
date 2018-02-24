@@ -51,15 +51,15 @@ class TrainerRepositoryTest extends DbTestCase {
     }
 
     protected function validEntity(): Entity {
-        return (new Trainer())->withName('Dyana')->withSpecialty('Clicker Training');
+        return new Trainer('Dyana', 'Clicker training');
     }
 
     protected function invalidEntity(): Entity {
-        return (new Trainer())->withName('2385798375')->withSpecialty('Whatever');
+        return new Trainer('2385798375', 'Whatever');
     }
 
     protected function wrongTypeEntity(): Entity {
-        return new Dog();
+        return new Dog('', '', 0);
     }
 
     /**

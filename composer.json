@@ -22,8 +22,8 @@
     "ramsey/uuid": "~3.7.3",
     "ramsey/uuid-doctrine": "~1.4.3",
     "rdlowrey/auryn": "~1.4.2",
-    "respect/validation": "~1.1",
-    "zendframework/zend-diactoros": "~1.7.0"
+    "zendframework/zend-diactoros": "~1.7.0",
+    "zendframework/zend-validator": "~2.10.2"
   },
   "require-dev": {
     "phpmetrics/phpmetrics": "~2.3",

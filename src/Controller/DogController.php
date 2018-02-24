@@ -37,7 +37,7 @@ class DogController extends ApplicationController {
 
     public function create(ServerRequestInterface $request) : ResponseInterface {
         $data = $request->getParsedBody()['dog'];
-        $dog = (new Dog())->withName($data['name'])->withBreed($data['breed'])->withIncrementedAge($data['age']);
+        $dog = new Dog($data['name'], $data['breed'], $data['age']);
         $this->dogRepository->save($dog);
         return new JsonResponse($this->serialize($dog), HttpStatusCodes::CREATED);
     }

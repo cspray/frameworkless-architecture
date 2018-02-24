@@ -25,12 +25,12 @@ abstract class DoctrineAwareRepository implements Repository {
     }
 
     public function find(UuidInterface $uuid): Entity {
-        $dog = $this->repository->find($uuid);
-        if (!$dog) {
+        $entity = $this->repository->find($uuid);
+        if (!$entity) {
             throw new NotFoundException('Could not find a ' . $this->getEntityClass() . ' with ID ' . $uuid);
         }
 
-        return $dog;
+        return $entity;
     }
 
     public function save(Entity $entity): bool {
@@ -38,6 +38,12 @@ abstract class DoctrineAwareRepository implements Repository {
         if (!$entity instanceof $entityClass) {
             throw new InvalidTypeException('Expected an entity with type ' . $entityClass . ' but got ' . get_class($entity));
         }
+
+        $results = $entity->validate();
+        if (!$results->isValid()) {
+            return false;
+        }
+
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
         return true;
@@ -50,5 +56,6 @@ abstract class DoctrineAwareRepository implements Repository {
             $this->entityManager->flush();
         }
     }
+
     abstract protected function getEntityClass() : string;
 }

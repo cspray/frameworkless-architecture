@@ -50,15 +50,15 @@ class ExerciseRepositoryTest extends DbTestCase {
     }
 
     protected function validEntity() : Entity {
-        return (new Exercise())->withName('Clicker')->withDescription('Use sounds to positively reinforce your dog');
+        return new Exercise('Clicker', 'Use sounds to positively reinforce your dog');
     }
 
     protected function invalidEntity(): Entity {
-        return new Exercise();
+        return new Exercise('', '');
     }
 
     protected function wrongTypeEntity(): Entity {
-        return new Dog();
+        return new Dog('', '', 0);
     }
 
     /**

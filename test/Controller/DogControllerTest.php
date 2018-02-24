@@ -14,7 +14,7 @@ use ArrayObject;
 class DogControllerTest extends TestCase {
 
     private function createDog(string $name, string $breed, int $age) : Dog {
-        return (new Dog())->withName($name)->withBreed($breed)->withIncrementedAge($age);
+        return new Dog($name, $breed, $age);
     }
 
     public function testIndex() {
