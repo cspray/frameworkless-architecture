@@ -15,4 +15,6 @@ trait IndexAwareMixin {
 
     abstract protected function getRepository() : Repository;
 
+    abstract protected function serialize($entities);
+
 }

@@ -29,4 +29,6 @@ trait CreateAwareMixin {
 
     abstract protected function responseForValidationError(ValidationResults $results) : ResponseInterface;
 
+    abstract protected function serialize($entity);
+
 }
