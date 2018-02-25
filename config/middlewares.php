@@ -20,7 +20,12 @@ return function(MiddlewareCollection $middlewares, Injector $injector) {
     $accessLogger = (new Logger('access'))->pushHandler(new StreamHandler(fopen('php://stdout', 'r+')));
     $accessLogMiddleware = new AccessLog($accessLogger);
 
+    $whoops = new \Whoops\Run();
+    $whoops->pushHandler(new \Whoops\Handler\JsonResponseHandler());
+    $whoopsMiddleware = new \Middlewares\Whoops($whoops);
+
     $middlewares->append($accessLogMiddleware);
+    $middlewares->append($whoopsMiddleware);
     $middlewares->append($corsMiddleware);
     $middlewares->append($parsedRequestBodyMiddleware);
 };
