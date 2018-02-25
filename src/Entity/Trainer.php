@@ -44,7 +44,7 @@ class Trainer implements Entity {
     }
 
     private function createSpecialtyRule() : ValidationRule {
-        $stringLength = new ZendValidator\StringLength(['min' => 10, 'max' => 500]);
+        $stringLength = new ZendValidator\StringLength(['min' => 5, 'max' => 500]);
         $stringLength->setMessage('specialty must have a length between %min% and %max%');
 
         return $this->createRuleForZendValidator($stringLength);

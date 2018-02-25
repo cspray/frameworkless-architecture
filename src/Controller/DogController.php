@@ -3,56 +3,49 @@
 namespace Cspray\ArchDemo\Controller;
 
 use Cspray\ArchDemo\Entity\Dog;
-use Cspray\ArchDemo\HttpStatusCodes;
+use Cspray\ArchDemo\Entity\Entity;
 use Cspray\ArchDemo\Repository\DogRepository;
+use Cspray\ArchDemo\Repository\Repository;
 use Cspray\ArchDemo\Transformer\DogTransformer;
 use League\Fractal;
 use League\Fractal\TransformerAbstract as FractalTransformer;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Ramsey\Uuid\Uuid;
-use Zend\Diactoros\Response\EmptyResponse;
-use Zend\Diactoros\Response\JsonResponse;
 
 class DogController extends ApplicationController {
 
-    private $dogRepository;
-    private $transformer;
+    use Mixin\IndexAwareMixin;
+    use Mixin\ShowAwareMixin;
+    use Mixin\CreateAwareMixin;
+    use Mixin\UpdateAwareMixin;
+    use Mixin\DeleteAwareMixin;
 
-    public function __construct(DogRepository $dogRepository, Fractal\Manager $fractal) {
-        parent::__construct($fractal);
-        $this->dogRepository = $dogRepository;
+    public function __construct(DogRepository $repository, Fractal\Manager $fractal) {
+        parent::__construct($repository, $fractal);
     }
 
-    public function index() : ResponseInterface {
-        $dogs = $this->dogRepository->findAll();
-        return new JsonResponse($this->serialize($dogs));
-    }
-
-    public function show(ServerRequestInterface $request) : ResponseInterface {
-        $uuid = Uuid::fromString($request->getAttribute('id'));
-        $dog = $this->dogRepository->find($uuid);
-        return new JsonResponse($this->serialize($dog));
-    }
-
-    public function create(ServerRequestInterface $request) : ResponseInterface {
+    protected function createNewEntity(ServerRequestInterface $request) : Entity {
         $data = $request->getParsedBody()['dog'];
-        $dog = new Dog($data['name'], $data['breed'], $data['age']);
-        $this->dogRepository->save($dog);
-        return new JsonResponse($this->serialize($dog), HttpStatusCodes::CREATED);
+        return new Dog($data['name'], $data['breed'], $data['age']);
     }
 
-    public function delete(ServerRequestInterface $request) : ResponseInterface {
-        $this->dogRepository->delete(Uuid::fromString($request->getAttribute('id')));
-        return new EmptyResponse();
-    }
+    protected function updateExistingEntity(Dog $entity, ServerRequestInterface $request): Entity {
+        $data = $request->getParsedBody()['dog'];
 
-    public function getTransformer(): FractalTransformer {
-        if (!$this->transformer) {
-            $this->transformer = new DogTransformer();
+        if (isset($data['name'])) {
+            $entity = $entity->withName($data['name']);
         }
 
-        return $this->transformer;
+        if (isset($data['aged']) && $data['aged']) {
+            $entity = $entity->withAgedOneYear();
+        }
+
+        return $entity;
+    }
+
+
+
+    public function getTransformer(): FractalTransformer {
+        return new DogTransformer();
     }
 
 }

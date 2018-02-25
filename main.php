@@ -11,8 +11,6 @@ $injector->execute($routesFunction);
 $middlewaresFunction = require(__DIR__ . '/config/middlewares.php');
 $middlewares = new \Equip\Dispatch\MiddlewareCollection();
 
-$middlewares->append(new \Cspray\ArchDemo\Middleware\ParsedRequestBodyMiddleware());
-
 $injector->execute($middlewaresFunction, [':middlewares' => $middlewares]);
 
 $defaultHandler = function(\Psr\Http\Message\ServerRequestInterface $request) use($injector) {

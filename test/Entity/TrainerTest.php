@@ -74,8 +74,8 @@ class TrainerTest extends TestCase {
 
     public function invalidTrainerSpecialtyProvider() {
         return [
-            ['', 'specialty must have a length between 10 and 500'],
-            [str_repeat('x', 600), 'specialty must have a length between 10 and 500']
+            ['', 'specialty must have a length between 5 and 500'],
+            [str_repeat('x', 600), 'specialty must have a length between 5 and 500']
         ];
     }
 

@@ -134,6 +134,146 @@ class DogControllerTest extends TestCase {
         $this->assertArraySubset($expected, json_decode((string) $response->getBody(), true));
     }
 
+    public function testCreateInvalidDog() {
+        $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
+        $mockDogRepository->expects($this->never())
+            ->method('save');
+
+        $request = (new ServerRequest())->withParsedBody(['dog' => ['name' => '', 'breed' => '', 'age' => 0]]);
+        $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
+
+        $response = $subject->create($request);
+
+        $this->assertSame(422, $response->getStatusCode());
+        $expected = [
+            'data' => [
+                'name' => ['name must have a length between 3 and 50'],
+                'breed' => ['breed must have a length between 3 and 50'],
+                'age' => ['age must be greater than 0']
+            ]
+        ];
+        $this->assertSame($expected, json_decode((string) $response->getBody(), true));
+    }
+
+    public function testUpdateFoundDogWithName() {
+        $ginapher = $this->createDog('Ginapher', 'Boxer', 6);
+        $dogId = $ginapher->getId();
+        $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
+        $mockDogRepository->expects($this->once())
+            ->method('find')
+            ->with(
+                $this->callback(function($param) use($dogId) {
+                    return (string) $param === (string) $dogId;
+                })
+            )
+            ->willReturn($ginapher);
+        $mockDogRepository->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(function($param) use ($dogId) {
+                    return $param instanceof Dog && (
+                            $param->getName() === 'Crystalbelle' &&
+                            $param->getBreed() === 'Boxer' &&
+                            $param->getAge() === 6
+                        );
+                })
+            )
+            ->willReturn(true);
+
+        $request = (new ServerRequest())->withAttribute('id', (string) $dogId)->withParsedBody([
+            'dog' => ['id' => (string) $dogId, 'name' => 'Crystalbelle']
+        ]);
+        $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
+
+        $response = $subject->update($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $expected = [
+            'data' => [
+                'id' => (string) $dogId,
+                'name' => 'Crystalbelle',
+                'breed' => 'Boxer',
+                'age' => 6
+            ]
+        ];
+        $this->assertSame($expected, json_decode((string) $response->getBody(), true));
+    }
+
+    public function testUpdateFoundDogWithAged() {
+        $ginapher = $this->createDog('Ginapher', 'Boxer', 6);
+        $dogId = $ginapher->getId();
+        $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
+        $mockDogRepository->expects($this->once())
+            ->method('find')
+            ->with(
+                $this->callback(function($param) use($dogId) {
+                    return (string) $param === (string) $dogId;
+                })
+            )
+            ->willReturn($ginapher);
+        $mockDogRepository->expects($this->once())
+            ->method('save')
+            ->with(
+                $this->callback(function($param) use ($dogId) {
+                    return $param instanceof Dog && (
+                            $param->getName() === 'Ginapher' &&
+                            $param->getBreed() === 'Boxer' &&
+                            $param->getAge() === 7
+                        );
+                })
+            )
+            ->willReturn(true);
+
+        $request = (new ServerRequest())->withAttribute('id', (string) $dogId)->withParsedBody([
+            'dog' => ['id' => (string) $dogId, 'aged' => true]
+        ]);
+        $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
+
+        $response = $subject->update($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $expected = [
+            'data' => [
+                'id' => (string) $dogId,
+                'name' => 'Ginapher',
+                'breed' => 'Boxer',
+                'age' => 7
+            ]
+        ];
+        $this->assertSame($expected, json_decode((string) $response->getBody(), true));
+    }
+
+    public function testUpdateFoundDogWithInvalidData() {
+        $ginapher = $this->createDog('Ginapher', 'Boxer', 6);
+        $dogId = $ginapher->getId();
+        $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
+        $mockDogRepository->expects($this->once())
+            ->method('find')
+            ->with(
+                $this->callback(function($param) use($dogId) {
+                    return (string) $param === (string) $dogId;
+                })
+            )
+            ->willReturn($ginapher);
+        $mockDogRepository->expects($this->never())
+            ->method('save');
+
+        $request = (new ServerRequest())->withAttribute('id', (string) $dogId)->withParsedBody([
+            'dog' => ['id' => (string) $dogId, 'name' => '&*^&*^&*^']
+        ]);
+        $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
+
+        $response = $subject->update($request);
+
+        $this->assertSame(422, $response->getStatusCode());
+        $expected = [
+            'data' => [
+                'name' => ['name may only contain letters and spaces']
+            ]
+        ];
+        $this->assertSame($expected, json_decode((string) $response->getBody(), true));
+    }
+
     public function testDeleteDogFound() {
         $dogId = Uuid::uuid4();
         $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();

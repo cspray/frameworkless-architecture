@@ -7,7 +7,7 @@ use function Cspray\ArchDemo\bootstrap;
 use Cspray\ArchDemo\Entity\Dog;
 use Cspray\ArchDemo\Entity\Entity;
 use Cspray\ArchDemo\Entity\Trainer;
-use Cspray\ArchDemo\Repository\TrainerRespository;
+use Cspray\ArchDemo\Repository\TrainerRepository;
 use Cspray\ArchDemo\Test\Repository\SharedExamples\CrudTest;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\DbUnit\Database\Connection;
@@ -39,7 +39,7 @@ class TrainerRepositoryTest extends DbTestCase {
     }
 
     protected function subject() : object {
-        return new TrainerRespository($this->entityManager);
+        return new TrainerRepository($this->entityManager);
     }
 
     protected function tableName(): string {
