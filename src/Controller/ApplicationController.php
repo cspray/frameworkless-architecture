@@ -23,11 +23,6 @@ abstract class ApplicationController {
         $this->fractal = $fractal;
     }
 
-    public function index() : ResponseInterface {
-        $entities = $this->repository->findAll();
-        return new JsonResponse($this->serialize($entities));
-    }
-
     public function rescueFrom(Throwable $error) : ResponseInterface {
         if (!$error instanceof NotFoundException) {
             throw $error;
