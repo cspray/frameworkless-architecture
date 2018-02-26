@@ -11,13 +11,16 @@ use Ramsey\Uuid\Uuid;
 use Zend\Diactoros\ServerRequest;
 use ArrayObject;
 
-class DogControllerTest extends TestCase {
+class DogControllerTest extends TestCase
+{
 
-    private function createDog(string $name, string $breed, int $age) : Dog {
+    private function createDog(string $name, string $breed, int $age) : Dog
+    {
         return new Dog($name, $breed, $age);
     }
 
-    public function testIndex() {
+    public function testIndex()
+    {
         $dogs = [
             $this->createDog('Nick', 'Labrador Retriever', 5),
             $this->createDog('Kate', 'Pit Mix', 4),
@@ -52,13 +55,14 @@ class DogControllerTest extends TestCase {
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testShowDogFound() {
+    public function testShowDogFound()
+    {
         $dogId = Uuid::uuid4();
         $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
         $mockDogRepository->expects($this->once())
                      ->method('find')
                      ->with(
-                         $this->callback(function($param) use($dogId) {
+                         $this->callback(function ($param) use ($dogId) {
                             return (string) $param === (string) $dogId;
                          })
                      )
@@ -81,7 +85,8 @@ class DogControllerTest extends TestCase {
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testShowDogNotFound() {
+    public function testShowDogNotFound()
+    {
         $dogId = Uuid::uuid4();
         $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
         $mockDogRepository->expects($this->once())
@@ -104,12 +109,13 @@ class DogControllerTest extends TestCase {
         $this->assertSame(404, $response->getStatusCode());
     }
 
-    public function testCreateValidDog() {
+    public function testCreateValidDog()
+    {
         $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
         $mockDogRepository->expects($this->once())
                      ->method('save')
                      ->with(
-                         $this->callback(function($param) {
+                         $this->callback(function ($param) {
                              return $param instanceof Dog && (
                                  $param->getName() === 'Missy' &&
                                  $param->getBreed() === 'Chihuahua' &&
@@ -118,7 +124,8 @@ class DogControllerTest extends TestCase {
                          })
                      )->willReturn(true);
 
-        $request = (new ServerRequest())->withParsedBody(['dog' => ['name' => 'Missy', 'breed' => 'Chihuahua', 'age' => 13]]);
+        $parsedRequest = ['dog' => ['name' => 'Missy', 'breed' => 'Chihuahua', 'age' => 13]];
+        $request = (new ServerRequest())->withParsedBody($parsedRequest);
         $subject = new DogController($mockDogRepository, new \League\Fractal\Manager());
 
         $response = $subject->create($request);
@@ -134,7 +141,8 @@ class DogControllerTest extends TestCase {
         $this->assertArraySubset($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testCreateInvalidDog() {
+    public function testCreateInvalidDog()
+    {
         $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
         $mockDogRepository->expects($this->never())
             ->method('save');
@@ -155,14 +163,15 @@ class DogControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testUpdateFoundDogWithName() {
+    public function testUpdateFoundDogWithName()
+    {
         $ginapher = $this->createDog('Ginapher', 'Boxer', 6);
         $dogId = $ginapher->getId();
         $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
         $mockDogRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($dogId) {
+                $this->callback(function ($param) use ($dogId) {
                     return (string) $param === (string) $dogId;
                 })
             )
@@ -170,7 +179,7 @@ class DogControllerTest extends TestCase {
         $mockDogRepository->expects($this->once())
             ->method('save')
             ->with(
-                $this->callback(function($param) use ($dogId) {
+                $this->callback(function ($param) use ($dogId) {
                     return $param instanceof Dog && (
                             $param->getName() === 'Crystalbelle' &&
                             $param->getBreed() === 'Boxer' &&
@@ -199,14 +208,15 @@ class DogControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testUpdateFoundDogWithAged() {
+    public function testUpdateFoundDogWithAged()
+    {
         $ginapher = $this->createDog('Ginapher', 'Boxer', 6);
         $dogId = $ginapher->getId();
         $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
         $mockDogRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($dogId) {
+                $this->callback(function ($param) use ($dogId) {
                     return (string) $param === (string) $dogId;
                 })
             )
@@ -214,7 +224,7 @@ class DogControllerTest extends TestCase {
         $mockDogRepository->expects($this->once())
             ->method('save')
             ->with(
-                $this->callback(function($param) use ($dogId) {
+                $this->callback(function ($param) use ($dogId) {
                     return $param instanceof Dog && (
                             $param->getName() === 'Ginapher' &&
                             $param->getBreed() === 'Boxer' &&
@@ -243,14 +253,15 @@ class DogControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testUpdateFoundDogWithInvalidData() {
+    public function testUpdateFoundDogWithInvalidData()
+    {
         $ginapher = $this->createDog('Ginapher', 'Boxer', 6);
         $dogId = $ginapher->getId();
         $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
         $mockDogRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($dogId) {
+                $this->callback(function ($param) use ($dogId) {
                     return (string) $param === (string) $dogId;
                 })
             )
@@ -274,13 +285,14 @@ class DogControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testDeleteDogFound() {
+    public function testDeleteDogFound()
+    {
         $dogId = Uuid::uuid4();
         $mockDogRepository = $this->getMockBuilder(DogRepository::class)->disableOriginalConstructor()->getMock();
         $mockDogRepository->expects($this->once())
             ->method('delete')
             ->with(
-                $this->callback(function($param) use($dogId) {
+                $this->callback(function ($param) use ($dogId) {
                     return (string) $param === (string) $dogId;
                 })
             );
@@ -293,5 +305,4 @@ class DogControllerTest extends TestCase {
         $this->assertEmpty((string) $response->getBody());
         $this->assertSame(204, $response->getStatusCode());
     }
-
 }

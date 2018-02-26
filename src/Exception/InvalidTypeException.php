@@ -9,4 +9,6 @@ declare(strict_types=1);
 
 namespace Cspray\ArchDemo\Exception;
 
-class InvalidTypeException extends Exception {}
+class InvalidTypeException extends Exception
+{
+}

@@ -12,13 +12,16 @@ use Cspray\ArchDemo\Test\Stub\RouterStub;
 use PHPUnit\Framework\TestCase;
 use Zend\Diactoros\ServerRequest;
 
-class FriendlyRouterTest extends TestCase {
+class FriendlyRouterTest extends TestCase
+{
 
-    private function getRouter() : FriendlyRouter {
+    private function getRouter() : FriendlyRouter
+    {
         return new FriendlyRouter(new RouterStub());
     }
 
-    public function testCallingMatchDelegatesToConstructorDependency() {
+    public function testCallingMatchDelegatesToConstructorDependency()
+    {
         $router = $this->getMockBuilder(Router::class)->getMock();
         $subject = new FriendlyRouter($router);
         $request = new ServerRequest();
@@ -29,7 +32,8 @@ class FriendlyRouterTest extends TestCase {
         $this->assertSame($resolved, $actual);
     }
 
-    public function testPassingInvalidControllerActionThrowsException() {
+    public function testPassingInvalidControllerActionThrowsException()
+    {
         $router = $this->getRouter();
 
         $this->expectException(InvalidArgumentException::class);
@@ -37,9 +41,10 @@ class FriendlyRouterTest extends TestCase {
         $router->get('/', 'bad_news');
     }
 
-    public function testMountingRouterAddsPrefix() {
+    public function testMountingRouterAddsPrefix()
+    {
         $router = $this->getRouter();
-        $router->mount('/prefix', function(FriendlyRouter $router) {
+        $router->mount('/prefix', function (FriendlyRouter $router) {
             $router->get('/foo', 'something#action');
         });
         $router->get('/noprefix', 'something_else#action');
@@ -57,13 +62,14 @@ class FriendlyRouterTest extends TestCase {
         $this->assertSame($expected, $actual);
     }
 
-    public function testNestedMountingAddsCorrectPrefixes() {
+    public function testNestedMountingAddsCorrectPrefixes()
+    {
         $router = $this->getRouter();
-        $router->mount('/foo', function(FriendlyRouter $router) {
+        $router->mount('/foo', function (FriendlyRouter $router) {
             $router->delete('/foo-get', 'one#action');
-            $router->mount('/bar', function(FriendlyRouter $router) {
+            $router->mount('/bar', function (FriendlyRouter $router) {
                 $router->post('/bar-post', 'two#action');
-                $router->mount('/baz', function(FriendlyRouter $router) {
+                $router->mount('/baz', function (FriendlyRouter $router) {
                     $router->put('/baz-put', 'three#action');
                 });
             });
@@ -82,9 +88,10 @@ class FriendlyRouterTest extends TestCase {
         $this->assertSame($expected, $actual);
     }
 
-    public function testSettingMountedRoot() {
+    public function testSettingMountedRoot()
+    {
         $router = $this->getRouter();
-        $router->mount('/foo', function(FriendlyRouter $router) {
+        $router->mount('/foo', function (FriendlyRouter $router) {
             $router->get($router->root(), 'something#action');
         });
 
@@ -99,7 +106,8 @@ class FriendlyRouterTest extends TestCase {
         $this->assertSame($expected, $actual);
     }
 
-    public function testUsingRouterRootWithoutMount() {
+    public function testUsingRouterRootWithoutMount()
+    {
         $router = $this->getRouter();
         $router->get($router->root(), 'something#action');
 
@@ -114,7 +122,8 @@ class FriendlyRouterTest extends TestCase {
         $this->assertSame($expected, $actual);
     }
 
-    public function testResourceAddsAppropriateRoutes() {
+    public function testResourceAddsAppropriateRoutes()
+    {
         $router = $this->getRouter();
         $router->resource('dogs', 'DogController');
 
@@ -133,5 +142,4 @@ class FriendlyRouterTest extends TestCase {
 
         $this->assertSame($expected, $actual);
     }
-
 }

@@ -13,11 +13,14 @@ use Cspray\ArchDemo\Router\Route;
 use Cspray\ArchDemo\Router\ControllerAction;
 use PHPUnit\Framework\TestCase;
 
-class RouteTest extends TestCase {
+class RouteTest extends TestCase
+{
 
-    function routeProvider() {
+    public function routeProvider()
+    {
+        $expected = "GET\t/handler-string\t\tcontroller#action";
         return [
-            [new Route('GET', '/handler-string', new ControllerAction('controller', 'action')), "GET\t/handler-string\t\tcontroller#action"],
+            [new Route('GET', '/handler-string', new ControllerAction('controller', 'action')), $expected],
 
         ];
     }
@@ -25,8 +28,8 @@ class RouteTest extends TestCase {
     /**
      * @dataProvider routeProvider
      */
-    function testRouteToString($route, $expected) {
+    public function testRouteToString($route, $expected)
+    {
         $this->assertEquals($expected, (string) $route);
     }
-
 }

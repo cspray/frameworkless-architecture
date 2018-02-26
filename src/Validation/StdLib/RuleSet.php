@@ -10,7 +10,8 @@ use Cspray\ArchDemo\Validation\RuleSet as ValidationRuleSet;
 use ArrayObject;
 use IteratorAggregate;
 
-class RuleSet implements IteratorAggregate, ValidationRuleSet {
+class RuleSet implements IteratorAggregate, ValidationRuleSet
+{
 
     private $rules;
 
@@ -24,7 +25,8 @@ class RuleSet implements IteratorAggregate, ValidationRuleSet {
      * @param array $rules
      * @throws InvalidTypeException
      */
-    public function __construct(array $rules) {
+    public function __construct(array $rules)
+    {
         foreach ($rules as $rule) {
             if (!$rule instanceof ValidationRule) {
                 throw new InvalidTypeException('All values passed must be a ' . ValidationRule::class);
@@ -33,18 +35,22 @@ class RuleSet implements IteratorAggregate, ValidationRuleSet {
         $this->rules = $rules;
     }
 
-    public function ruleForAttribute(string $attribute): ValidationRule {
+    public function ruleForAttribute(string $attribute): ValidationRule
+    {
         if (isset($this->rules[$attribute])) {
             return $this->rules[$attribute];
         }
         return new class implements ValidationRule {
-            public function passesCheck($value, string $attributeName = null) : ValidationResults {
+            public function passesCheck($value, string $attributeName = null) : ValidationResults
+            {
                 return new class implements ValidationResults {
-                    public function isValid(): bool {
+                    public function isValid(): bool
+                    {
                         return true;
                     }
 
-                    public function getErrorMessages(): array {
+                    public function getErrorMessages(): array
+                    {
                         return [];
                     }
                 };
@@ -59,8 +65,8 @@ class RuleSet implements IteratorAggregate, ValidationRuleSet {
      * <b>Traversable</b>
      * @since 5.0.0
      */
-    public function getIterator() {
+    public function getIterator()
+    {
         return new ArrayObject($this->rules);
     }
-
 }

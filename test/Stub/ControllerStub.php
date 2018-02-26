@@ -8,18 +8,20 @@ use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\EmptyResponse;
 use Zend\Diactoros\Response\TextResponse;
 
-class ControllerStub {
+class ControllerStub
+{
 
     private $request;
 
-    public function action(ServerRequestInterface $request) : ResponseInterface {
+    public function action(ServerRequestInterface $request) : ResponseInterface
+    {
         $this->request = $request;
 
         return new TextResponse('From ControllerStub');
     }
 
-    public function getRequest() : ServerRequestInterface {
+    public function getRequest() : ServerRequestInterface
+    {
         return $this->request;
     }
-
 }

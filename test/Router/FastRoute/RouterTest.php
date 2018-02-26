@@ -18,45 +18,47 @@ use Cspray\ArchDemo\Router\ResolvedRoute;
 use Cspray\ArchDemo\Router\Route;
 use Cspray\ArchDemo\Exception\InvalidArgumentException;
 use Cspray\ArchDemo\Exception\InvalidTypeException;
-use FastRoute\{
-    DataGenerator\GroupCountBased as GcbDataGenerator,
-    Dispatcher\GroupCountBased as GcbDispatcher,
-    RouteCollector,
-    RouteParser\Std as StdRouteParser
-};
-use Psr\Http\Message\{
-    ResponseInterface,
-    ServerRequestInterface
-};
-use Zend\Diactoros\{
-    ServerRequest,
-    Uri
-};
+use FastRoute\DataGenerator\GroupCountBased as GcbDataGenerator;
+use FastRoute\Dispatcher\GroupCountBased as GcbDispatcher;
+use FastRoute\RouteCollector;
+use FastRoute\RouteParser\Std as StdRouteParser;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\ServerRequest;
+use Zend\Diactoros\Uri;
 use PHPUnit\Framework\TestCase;
 
+class RouterTest extends TestCase
+{
 
-class RouterTest extends TestCase {
-
-    private function getRouter() {
+    private function getRouter()
+    {
         return new FastRouteRouter(
             new RouteCollector(new StdRouteParser(), new GcbDataGenerator()),
-            function($data) { return new GcbDispatcher($data); }
+            function ($data) {
+                return new GcbDispatcher($data);
+            }
         );
     }
 
-    public function testFastRouteDispatcherCallbackReturnsImproperTypeThrowsException() {
+    public function testFastRouteDispatcherCallbackReturnsImproperTypeThrowsException()
+    {
         $router = new FastRouteRouter(
             new RouteCollector(new StdRouteParser(), new GcbDataGenerator()),
-            function() { return 'not a dispatcher'; }
+            function () {
+                return 'not a dispatcher';
+            }
         );
 
+        $msg = 'A FastRoute\\Dispatcher must be returned from dispatcher callback injected in constructor';
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('A FastRoute\\Dispatcher must be returned from dispatcher callback injected in constructor');
+        $this->expectExceptionMessage($msg);
 
         $router->match(new ServerRequest());
     }
 
-    public function testRouterNotFoundReturnsCorrectResolvedRoute() {
+    public function testRouterNotFoundReturnsCorrectResolvedRoute()
+    {
         $router = $this->getRouter();
         $resolved = $router->match(new ServerRequest());
         $this->assertInstanceOf(ResolvedRoute::class, $resolved);
@@ -67,7 +69,8 @@ class RouterTest extends TestCase {
         $this->assertSame('index', $controllerAction->getAction());
     }
 
-    public function testRouterMethodNotAllowedReturnsCorrectResolvedRoute() {
+    public function testRouterMethodNotAllowedReturnsCorrectResolvedRoute()
+    {
         $router = $this->getRouter();
         $request = (new ServerRequest())->withMethod('POST')
             ->withUri(new Uri('http://labrador.dev/foo'));
@@ -86,7 +89,8 @@ class RouterTest extends TestCase {
         $this->assertSame('index', $controllerAction->getAction());
     }
 
-    public function testRouterIsOkReturnsCorrectResolvedRoute() {
+    public function testRouterIsOkReturnsCorrectResolvedRoute()
+    {
         $router = $this->getRouter();
 
         $request = (new ServerRequest())->withMethod('GET')
@@ -103,7 +107,8 @@ class RouterTest extends TestCase {
         $this->assertSame('action', $controllerAction->getAction());
     }
 
-    public function testRouteWithParametersSetOnRequestAttributes() {
+    public function testRouteWithParametersSetOnRequestAttributes()
+    {
         $router = $this->getRouter();
 
         $router->addRoute('POST', '/foo/{name}/{id}', new ControllerAction('attr', 'action'));
@@ -119,7 +124,8 @@ class RouterTest extends TestCase {
         $this->assertSame('qux', $resolved->getRequest()->getAttribute('id'));
     }
 
-    public function testArchDemoMetaRequestDataSetOnRequestAttributes() {
+    public function testArchDemoMetaRequestDataSetOnRequestAttributes()
+    {
         $router = $this->getRouter();
 
         $router->addRoute('POST', '/foo', new ControllerAction('controller', 'action'));
@@ -132,7 +138,8 @@ class RouterTest extends TestCase {
         $this->assertSame(['handler' => 'controller#action'], $resolved->getRequest()->getAttribute('_arch_demo'));
     }
 
-    public function testGetRoutesWithJustOne() {
+    public function testGetRoutesWithJustOne()
+    {
         $router = $this->getRouter();
         $router->addRoute('GET', '/foo', new ControllerAction('controller', 'action'));
 
@@ -144,7 +151,8 @@ class RouterTest extends TestCase {
         $this->assertSame('controller#action', (string) $routes[0]->getControllerAction());
     }
 
-    public function testGetRoutesWithOnePatternSupportingMultipleMethods() {
+    public function testGetRoutesWithOnePatternSupportingMultipleMethods()
+    {
         $router = $this->getRouter();
         $router->addRoute('GET', '/foo/bar', new ControllerAction('foo_bar', 'get'));
         $router->addRoute('POST', '/foo/bar', new ControllerAction('foo_bar', 'post'));
@@ -169,7 +177,8 @@ class RouterTest extends TestCase {
         $this->assertSame($expected, $actual);
     }
 
-    public function testSettingNotFoundController() {
+    public function testSettingNotFoundController()
+    {
         $router = $this->getRouter();
         $router->setNotFoundControllerAction(new ControllerAction("YourNotFoundController", "action"));
         $controllerAction = $router->getNotFoundControllerAction();
@@ -177,7 +186,8 @@ class RouterTest extends TestCase {
         $this->assertSame("action", $controllerAction->getAction());
     }
 
-    public function testSettingMethodNotAllowedController() {
+    public function testSettingMethodNotAllowedController()
+    {
         $router = $this->getRouter();
         $router->setMethodNotAllowedControllerAction(new ControllerAction("YourMethodNotAllowedController", "action"));
         $controllerAction = $router->getMethodNotAllowedControllerAction();
@@ -185,7 +195,8 @@ class RouterTest extends TestCase {
         $this->assertSame("action", $controllerAction->getAction());
     }
 
-    public function testUrlDecodingCustomAttributes() {
+    public function testUrlDecodingCustomAttributes()
+    {
         $request = (new ServerRequest())->withMethod('GET')
             ->withUri(new Uri('http://example.com/foo%20bar'));
         $router = $this->getRouter();
@@ -196,5 +207,4 @@ class RouterTest extends TestCase {
         $this->assertTrue($resolved->isOk());
         $this->assertSame('foo bar', $resolved->getRequest()->getAttribute('param'));
     }
-
 }

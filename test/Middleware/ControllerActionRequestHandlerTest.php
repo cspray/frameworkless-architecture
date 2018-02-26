@@ -11,9 +11,11 @@ use Cspray\ArchDemo\Test\Stub\ControllerStub;
 use PHPUnit\Framework\TestCase;
 use Zend\Diactoros\ServerRequest;
 
-class ControllerActionRequestHandlerTest extends TestCase {
+class ControllerActionRequestHandlerTest extends TestCase
+{
 
-    public function testControllerActionBothValid() {
+    public function testControllerActionBothValid()
+    {
         $request = new ServerRequest();
         $controllerAction = new ControllerAction(ControllerStub::class, 'action');
         $injector = $this->getMockBuilder(Injector::class)->disableOriginalConstructor()->getMock();
@@ -31,7 +33,8 @@ class ControllerActionRequestHandlerTest extends TestCase {
         $this->assertSame($request, $controller->getRequest());
     }
 
-    public function testControllerGetsRequestFromResolvedRoute() {
+    public function testControllerGetsRequestFromResolvedRoute()
+    {
         $request = new ServerRequest();
         $controllerAction = new ControllerAction(ControllerStub::class, 'action');
         $injector = $this->getMockBuilder(Injector::class)->disableOriginalConstructor()->getMock();
@@ -49,5 +52,4 @@ class ControllerActionRequestHandlerTest extends TestCase {
         $this->assertSame('From ControllerStub', (string) $response->getBody());
         $this->assertSame($resolvedRequest, $controller->getRequest());
     }
-
 }

@@ -6,17 +6,21 @@ use Zend\Validator as ZendValidator;
 use Cspray\ArchDemo\Validation\Rule;
 use Cspray\ArchDemo\Validation\Results;
 
-trait RuleHelper {
+trait RuleHelper
+{
 
-    protected function createRuleForZendValidator(ZendValidator\ValidatorInterface $validator) : Rule {
+    protected function createRuleForZendValidator(ZendValidator\ValidatorInterface $validator) : Rule
+    {
         return new class($validator) implements Rule {
             private $validator;
 
-            public function __construct(ZendValidator\ValidatorInterface $validator) {
+            public function __construct(ZendValidator\ValidatorInterface $validator)
+            {
                 $this->validator = $validator;
             }
 
-            public function passesCheck($value, string $attributeName = null): Results {
+            public function passesCheck($value, string $attributeName = null): Results
+            {
                 $passes = $this->validator->isValid($value);
                 $errorMessages = $this->validator->getMessages();
 
@@ -24,21 +28,23 @@ trait RuleHelper {
                     private $passes;
                     private $errorMessages;
 
-                    public function __construct(bool $passes, array $errorMessages) {
+                    public function __construct(bool $passes, array $errorMessages)
+                    {
                         $this->passes = $passes;
                         $this->errorMessages = $errorMessages;
                     }
 
-                    public function isValid(): bool {
+                    public function isValid(): bool
+                    {
                         return $this->passes;
                     }
 
-                    public function getErrorMessages(): array {
+                    public function getErrorMessages(): array
+                    {
                         return array_values($this->errorMessages);
                     }
                 };
             }
         };
     }
-
 }

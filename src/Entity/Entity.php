@@ -4,8 +4,8 @@ namespace Cspray\ArchDemo\Entity;
 
 use Cspray\ArchDemo\Validation\Validatable;
 
-interface Entity extends Validatable {
+interface Entity extends Validatable
+{
 
     public function getId();
-
 }

@@ -6,10 +6,11 @@ use Cspray\ArchDemo\HttpStatusCodes;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Response\JsonResponse;
 
-class MethodNotAllowedController {
+class MethodNotAllowedController
+{
 
-    public function index() : ResponseInterface {
+    public function index() : ResponseInterface
+    {
         return new JsonResponse(['message' => 'Method Not Allowed'], HttpStatusCodes::METHOD_NOT_ALLOWED);
     }
-
 }

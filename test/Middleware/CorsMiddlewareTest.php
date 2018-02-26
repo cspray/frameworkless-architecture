@@ -13,9 +13,11 @@ use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\Stream;
 
-class CorsMiddlewareTest extends TestCase {
+class CorsMiddlewareTest extends TestCase
+{
 
-    public function testReturnsErrorCodeWhenOriginsDoNotMatch() {
+    public function testReturnsErrorCodeWhenOriginsDoNotMatch()
+    {
         $request = (new ServerRequest())->withHeader('Origin', 'http://example.com:80');
         $config = new CorsConfig(['serverOrigin' => 'https://not.example.com:80']);
         $subject = new CorsMiddleware($config);
@@ -26,7 +28,8 @@ class CorsMiddlewareTest extends TestCase {
         $this->assertSame(403, $response->getStatusCode());
     }
 
-    public function testReturnsResponseFromRequestHandler() {
+    public function testReturnsResponseFromRequestHandler()
+    {
         $request = (new ServerRequest())->withHeader('Origin', 'http://example.com:80')->withMethod('GET');
         $config = new CorsConfig([
             'serverOrigin' => 'http://example.com:80',
@@ -45,13 +48,15 @@ class CorsMiddlewareTest extends TestCase {
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    private function requestHandler() : RequestHandlerInterface {
+    private function requestHandler() : RequestHandlerInterface
+    {
         return new class implements RequestHandlerInterface {
 
             /**
              * Handle the request and return a response.
              */
-            public function handle(ServerRequestInterface $request): ResponseInterface {
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
                 $body = new Stream('php://temp', 'wb');
                 $body->write('Ok');
                 return (new Response())->withStatus(200)->withBody($body);
@@ -59,5 +64,4 @@ class CorsMiddlewareTest extends TestCase {
 
         };
     }
-
 }

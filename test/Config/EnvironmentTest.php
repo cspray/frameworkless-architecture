@@ -5,22 +5,26 @@ namespace Cspray\ArchDemo\Test\Config;
 use Cspray\ArchDemo\Config\Environment;
 use PHPUnit\Framework\TestCase;
 
-class EnvironmentTest extends TestCase {
+class EnvironmentTest extends TestCase
+{
 
     private $dummyConfigPath;
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
         $this->dummyConfigPath = dirname(__DIR__) . '/_dummy_app/config/environment.php';
     }
 
-    public function testEnvironmentName() {
+    public function testEnvironmentName()
+    {
         $environment = Environment::loadFromPhpFile('development', $this->dummyConfigPath);
 
         $this->assertSame('development', $environment->environmentName());
     }
 
-    public function environmentFileDatabaseConfigProvider() {
+    public function environmentFileDatabaseConfigProvider()
+    {
         return [
             ['development', 'driver', 'dev-driver'],
             ['development', 'host', 'dev-host'],
@@ -38,14 +42,16 @@ class EnvironmentTest extends TestCase {
     /**
      * @dataProvider environmentFileDatabaseConfigProvider
      */
-    public function testLoadFromFileDatabaseConfig(string $environment, string $method, string $expected) {
+    public function testLoadFromFileDatabaseConfig(string $environment, string $method, string $expected)
+    {
         $config = Environment::loadFromPhpFile($environment, $this->dummyConfigPath);
         $dbConfig = $config->databaseConfig();
 
         $this->assertSame($expected, $dbConfig->$method());
     }
 
-    public function environmentFileCorsConfigProvider() {
+    public function environmentFileCorsConfigProvider()
+    {
         return [
             ['development', 'preflightCacheMaxAge', 12345],
             ['development', 'forceAddAllowedMethodsToPreflightResponse', true],
@@ -62,14 +68,16 @@ class EnvironmentTest extends TestCase {
     /**
      * @dataProvider environmentFileCorsConfigProvider
      */
-    public function testLoadFromFileCorsConfig(string $environment, string $method, $expected) {
+    public function testLoadFromFileCorsConfig(string $environment, string $method, $expected)
+    {
         $config = Environment::loadFromPhpFile($environment, $this->dummyConfigPath);
         $corsConfig = $config->corsConfig();
 
         $this->assertSame($expected, $corsConfig->$method());
     }
 
-    public function testLoadFromFileCorsServerOrigin() {
+    public function testLoadFromFileCorsServerOrigin()
+    {
         $config = Environment::loadFromPhpFile('development', $this->dummyConfigPath);
         $corsConfig = $config->corsConfig();
 
@@ -80,7 +88,8 @@ class EnvironmentTest extends TestCase {
         $this->assertSame(1234, $uri->getPort());
     }
 
-    public function environmentArrayDatabaseConfigProvider() {
+    public function environmentArrayDatabaseConfigProvider()
+    {
         return [
             ['development', ['db' => ['driver' => 'array-driver']], 'driver', 'array-driver'],
             ['development', ['db' => ['host' => 'array-host']], 'host', 'array-host'],
@@ -93,10 +102,10 @@ class EnvironmentTest extends TestCase {
     /**
      * @dataProvider environmentArrayDatabaseConfigProvider
      */
-    public function testLoadFromArray(string $environment, array $actualData, string $method, string $expected) {
+    public function testLoadFromArray(string $environment, array $actualData, string $method, string $expected)
+    {
         $config = Environment::loadFromArray($environment, $actualData);
         $dbConfig = $config->databaseConfig();
         $this->assertSame($expected, $dbConfig->$method());
     }
-
 }

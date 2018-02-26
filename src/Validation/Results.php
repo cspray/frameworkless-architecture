@@ -2,10 +2,10 @@
 
 namespace Cspray\ArchDemo\Validation;
 
-interface Results {
+interface Results
+{
 
     public function isValid() : bool;
 
     public function getErrorMessages() : array;
-
 }

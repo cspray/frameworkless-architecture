@@ -6,7 +6,8 @@ use Auryn\Injector;
 use Cspray\ArchDemo\Config\Environment;
 use Doctrine\DBAL\Types\Type as DoctrineType;
 
-function bootstrap(string $environment) : Injector {
+function bootstrap(string $environment) : Injector
+{
     static $injectors = [];
 
     if (!isset($injectors[$environment])) {

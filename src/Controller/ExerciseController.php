@@ -12,7 +12,8 @@ use League\Fractal\TransformerAbstract as FractalTransformer;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Stdlib\ResponseInterface;
 
-class ExerciseController extends ApplicationController {
+class ExerciseController extends ApplicationController
+{
 
     use Mixin\IndexAwareMixin;
     use Mixin\ShowAwareMixin;
@@ -20,16 +21,19 @@ class ExerciseController extends ApplicationController {
     use Mixin\UpdateAwareMixin;
     use Mixin\DeleteAwareMixin;
 
-    public function __construct(ExerciseRepository $repository, Fractal\Manager $fractal) {
+    public function __construct(ExerciseRepository $repository, Fractal\Manager $fractal)
+    {
         parent::__construct($repository, $fractal);
     }
 
-    protected function createNewEntity(ServerRequestInterface $request): Entity {
+    protected function createNewEntity(ServerRequestInterface $request): Entity
+    {
         $data = $request->getParsedBody()['exercise'];
         return new Exercise($data['name'], $data['description']);
     }
 
-    protected function updateExistingEntity(Exercise $entity, ServerRequestInterface $request): Entity {
+    protected function updateExistingEntity(Exercise $entity, ServerRequestInterface $request): Entity
+    {
         $data = $request->getParsedBody()['exercise'];
         if (isset($data['name'])) {
             $entity = $entity->withName($data['name']);
@@ -42,8 +46,8 @@ class ExerciseController extends ApplicationController {
         return $entity;
     }
 
-    protected function getTransformer(): FractalTransformer {
+    protected function getTransformer(): FractalTransformer
+    {
         return new ExerciseTransformer();
     }
-
 }

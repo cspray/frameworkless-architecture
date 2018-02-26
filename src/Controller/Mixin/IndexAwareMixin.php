@@ -6,9 +6,11 @@ use Cspray\ArchDemo\Repository\Repository;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Response\JsonResponse;
 
-trait IndexAwareMixin {
+trait IndexAwareMixin
+{
 
-    public function index() : ResponseInterface {
+    public function index() : ResponseInterface
+    {
         $entities = $this->getRepository()->findAll();
         return new JsonResponse($this->serialize($entities));
     }
@@ -16,5 +18,4 @@ trait IndexAwareMixin {
     abstract protected function getRepository() : Repository;
 
     abstract protected function serialize($entities);
-
 }

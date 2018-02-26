@@ -10,9 +10,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid\Uuid;
 use Zend\Diactoros\Response\JsonResponse;
 
-trait UpdateAwareMixin {
+trait UpdateAwareMixin
+{
 
-    public function update(ServerRequestInterface $request) : ResponseInterface {
+    public function update(ServerRequestInterface $request) : ResponseInterface
+    {
         $id = Uuid::fromString($request->getAttribute('id'));
         $entity = $this->getRepository()->find($id);
         $entity = $this->updateExistingEntity($entity, $request);
@@ -32,5 +34,4 @@ trait UpdateAwareMixin {
     abstract protected function responseForValidationError(ValidationResults $results) : ResponseInterface;
 
     abstract protected function serialize($entity);
-
 }

@@ -4,8 +4,8 @@ namespace Cspray\ArchDemo\Validation;
 
 use Traversable;
 
-interface RuleSet extends Traversable {
+interface RuleSet extends Traversable
+{
 
     public function ruleForAttribute(string $attribute) : Rule;
-
 }

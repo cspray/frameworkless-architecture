@@ -26,7 +26,8 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Psr\Http\Message\ServerRequestInterface;
 
-class Router implements ArchDemoRouter {
+class Router implements ArchDemoRouter
+{
 
     private $dispatcherCb;
     private $collector;
@@ -46,7 +47,8 @@ class Router implements ArchDemoRouter {
      * @param RouteCollector $collector
      * @param callable $dispatcherCb
      */
-    public function __construct(RouteCollector $collector, callable $dispatcherCb) {
+    public function __construct(RouteCollector $collector, callable $dispatcherCb)
+    {
         $this->collector = $collector;
         $this->dispatcherCb = $dispatcherCb;
     }
@@ -57,7 +59,8 @@ class Router implements ArchDemoRouter {
      * @param ControllerAction $controllerAction
      * @return void
      */
-    public function addRoute(string $method, string $pattern, ControllerAction $controllerAction) : void {
+    public function addRoute(string $method, string $pattern, ControllerAction $controllerAction) : void
+    {
         $this->routes[] = new Route($method, $pattern, $controllerAction);
         $this->collector->addRoute($method, $pattern, $controllerAction);
     }
@@ -67,7 +70,8 @@ class Router implements ArchDemoRouter {
      * @return ResolvedRoute
      * @throws InvalidArgumentException
      */
-    public function match(ServerRequestInterface $request) : ResolvedRoute {
+    public function match(ServerRequestInterface $request) : ResolvedRoute
+    {
         $uri = $request->getUri();
         $path = empty($uri->getPath()) ? '/' : $uri->getPath();
         $route = $this->getDispatcher()->dispatch($request->getMethod(), $path);
@@ -93,13 +97,19 @@ class Router implements ArchDemoRouter {
      * @param array $route
      * @return ResolvedRoute|null
      */
-    private function guardNotOkMatch(ServerRequestInterface $request, int $status, array $route) {
+    private function guardNotOkMatch(ServerRequestInterface $request, int $status, array $route)
+    {
         if (empty($route) || $status === Dispatcher::NOT_FOUND) {
             return new ResolvedRoute($request, $this->getNotFoundControllerAction(), HttpStatusCodes::NOT_FOUND);
         }
 
         if ($status === Dispatcher::METHOD_NOT_ALLOWED) {
-            return new ResolvedRoute($request, $this->getMethodNotAllowedControllerAction(), HttpStatusCodes::METHOD_NOT_ALLOWED, $route[0]);
+            return new ResolvedRoute(
+                $request,
+                $this->getMethodNotAllowedControllerAction(),
+                HttpStatusCodes::METHOD_NOT_ALLOWED,
+                $route[0]
+            );
         }
 
         return null;
@@ -109,7 +119,8 @@ class Router implements ArchDemoRouter {
      * @return Dispatcher
      * @throws InvalidTypeException
      */
-    private function getDispatcher() : Dispatcher {
+    private function getDispatcher() : Dispatcher
+    {
         $cb = $this->dispatcherCb;
         $dispatcher = $cb($this->collector->getData());
         if (!$dispatcher instanceof Dispatcher) {
@@ -120,7 +131,8 @@ class Router implements ArchDemoRouter {
         return $dispatcher;
     }
 
-    public function getRoutes() : array {
+    public function getRoutes() : array
+    {
         return $this->routes;
     }
 
@@ -129,7 +141,8 @@ class Router implements ArchDemoRouter {
      *
      * @return ControllerAction
      */
-    public function getNotFoundControllerAction() : ControllerAction {
+    public function getNotFoundControllerAction() : ControllerAction
+    {
         if (!$this->notFoundControllerAction) {
             $this->setNotFoundControllerAction(new ControllerAction(NotFoundController::class, 'index'));
         }
@@ -140,9 +153,11 @@ class Router implements ArchDemoRouter {
     /**
      * @return ControllerAction
      */
-    public function getMethodNotAllowedControllerAction() : ControllerAction {
+    public function getMethodNotAllowedControllerAction() : ControllerAction
+    {
         if (!$this->methodNotFoundControllerAction) {
-            $this->setMethodNotAllowedControllerAction(new ControllerAction(MethodNotAllowedController::class, 'index'));
+            $controllerAction = new ControllerAction(MethodNotAllowedController::class, 'index');
+            $this->setMethodNotAllowedControllerAction($controllerAction);
         }
         return $this->methodNotFoundControllerAction;
     }
@@ -154,7 +169,8 @@ class Router implements ArchDemoRouter {
      * @param callable $controller
      * @return $this
      */
-    public function setNotFoundControllerAction(ControllerAction $controllerAction) : self {
+    public function setNotFoundControllerAction(ControllerAction $controllerAction) : self
+    {
         $this->notFoundControllerAction = $controllerAction;
         return $this;
     }
@@ -166,9 +182,9 @@ class Router implements ArchDemoRouter {
      * @param callable $controller
      * @return $this
      */
-    public function setMethodNotAllowedControllerAction(ControllerAction $controllerAction) : self {
+    public function setMethodNotAllowedControllerAction(ControllerAction $controllerAction) : self
+    {
         $this->methodNotFoundControllerAction = $controllerAction;
         return $this;
     }
-
 }

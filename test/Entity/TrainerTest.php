@@ -6,26 +6,30 @@ namespace Cspray\ArchDemo\Test\Entity;
 use Cspray\ArchDemo\Entity\Trainer;
 use PHPUnit\Framework\TestCase;
 
-class TrainerTest extends TestCase {
+class TrainerTest extends TestCase
+{
 
     /**
      * @var Trainer
      */
     private $subject;
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
         $this->subject = new Trainer('', '');
     }
 
-    public function testWithName() {
+    public function testWithName()
+    {
         $trainer = $this->subject->withName('Nick');
 
         $this->assertEmpty($this->subject->getName());
         $this->assertSame('Nick', $trainer->getName());
     }
 
-    public function testWithSpecialty() {
+    public function testWithSpecialty()
+    {
         $trainer = $this->subject->withSpecialty('Protection');
 
         $this->assertEmpty($this->subject->getSpecialty());
@@ -33,21 +37,24 @@ class TrainerTest extends TestCase {
     }
 
 
-    public function testAllTogether() {
+    public function testAllTogether()
+    {
         $trainer = $this->subject->withName('Nick')->withSpecialty('Agility');
 
         $this->assertSame('Nick', $trainer->getName());
         $this->assertSame('Agility', $trainer->getSpecialty());
     }
 
-    public function testValidTrainer() {
+    public function testValidTrainer()
+    {
         $exercise = new Trainer('Br Christopher', 'Obedience training and dog-human relationship.');
         $results = $exercise->validate();
 
         $this->assertTrue($results->isValid());
     }
 
-    public function invalidTrainerNameProvider() {
+    public function invalidTrainerNameProvider()
+    {
         return [
             ['', 'name must have a length between 3 and 50'],
             ['a', 'name must have a length between 3 and 50'],
@@ -59,7 +66,8 @@ class TrainerTest extends TestCase {
     /**
      * @dataProvider invalidTrainerNameProvider
      */
-    public function testInvalidTrainerName(string $actualName, string $expectedError) {
+    public function testInvalidTrainerName(string $actualName, string $expectedError)
+    {
         $trainer = new Trainer($actualName, 'A description of their specialty');
         $results = $trainer->validate();
 
@@ -72,7 +80,8 @@ class TrainerTest extends TestCase {
         $this->assertSame($expected, $results->getErrorMessages());
     }
 
-    public function invalidTrainerSpecialtyProvider() {
+    public function invalidTrainerSpecialtyProvider()
+    {
         return [
             ['', 'specialty must have a length between 5 and 500'],
             [str_repeat('x', 600), 'specialty must have a length between 5 and 500']
@@ -82,7 +91,8 @@ class TrainerTest extends TestCase {
     /**
      * @dataProvider invalidTrainerSpecialtyProvider
      */
-    public function testInvalidTrainerSpecialty(string $actualSpecialty, string $expectedError) {
+    public function testInvalidTrainerSpecialty(string $actualSpecialty, string $expectedError)
+    {
         $trainer = new Trainer('Br Christopher', $actualSpecialty);
         $results = $trainer->validate();
 
@@ -94,5 +104,4 @@ class TrainerTest extends TestCase {
         ];
         $this->assertSame($expected, $results->getErrorMessages());
     }
-
 }

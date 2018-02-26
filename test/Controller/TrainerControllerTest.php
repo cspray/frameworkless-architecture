@@ -12,13 +12,16 @@ use Zend\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use ArrayObject;
 
-class TrainerControllerTest extends TestCase {
+class TrainerControllerTest extends TestCase
+{
 
-    private function createTrainer(string $name, string $specialty) : Trainer {
+    private function createTrainer(string $name, string $specialty) : Trainer
+    {
         return new Trainer($name, $specialty);
     }
 
-    public function testIndex() {
+    public function testIndex()
+    {
         $trainers = [
             $this->createTrainer('Br Christopher', 'Obedience'),
             $this->createTrainer('Charles', 'Agility'),
@@ -50,13 +53,14 @@ class TrainerControllerTest extends TestCase {
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testShowTrainerFound() {
+    public function testShowTrainerFound()
+    {
         $trainerId = Uuid::uuid4();
         $mockRepository = $this->getMockBuilder(TrainerRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($trainerId) {
+                $this->callback(function ($param) use ($trainerId) {
                     return (string) $param === (string) $trainerId;
                 })
             )
@@ -78,7 +82,8 @@ class TrainerControllerTest extends TestCase {
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testShowTrainerNotFound() {
+    public function testShowTrainerNotFound()
+    {
         $trainerId = Uuid::uuid4();
         $mockRepository = $this->getMockBuilder(TrainerRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
@@ -101,12 +106,13 @@ class TrainerControllerTest extends TestCase {
         $this->assertSame(404, $response->getStatusCode());
     }
 
-    public function testCreateValidTrainer() {
+    public function testCreateValidTrainer()
+    {
         $mockRepository = $this->getMockBuilder(TrainerRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('save')
             ->with(
-                $this->callback(function($param) {
+                $this->callback(function ($param) {
                     return $param instanceof Trainer && (
                             $param->getName() === 'Charles' &&
                             $param->getSpecialty() === 'Obedience'
@@ -114,7 +120,8 @@ class TrainerControllerTest extends TestCase {
                 })
             )->willReturn(true);
 
-        $request = (new ServerRequest())->withParsedBody(['trainer' => ['name' => 'Charles', 'specialty' => 'Obedience']]);
+        $parsedBody = ['trainer' => ['name' => 'Charles', 'specialty' => 'Obedience']];
+        $request = (new ServerRequest())->withParsedBody($parsedBody);
         $subject = new TrainerController($mockRepository, new \League\Fractal\Manager());
 
         $response = $subject->create($request);
@@ -129,7 +136,8 @@ class TrainerControllerTest extends TestCase {
         $this->assertArraySubset($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testCreateInvalidTrainer() {
+    public function testCreateInvalidTrainer()
+    {
         $mockRepository = $this->getMockBuilder(TrainerRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->never())
             ->method('save');
@@ -149,14 +157,15 @@ class TrainerControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testUpdateFoundTrainerWithName() {
+    public function testUpdateFoundTrainerWithName()
+    {
         $ginapher = $this->createTrainer('Ginapher', 'Agility Training');
         $trainerId = $ginapher->getId();
         $mockRepository = $this->getMockBuilder(TrainerRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($trainerId) {
+                $this->callback(function ($param) use ($trainerId) {
                     return (string) $param === (string) $trainerId;
                 })
             )
@@ -164,7 +173,7 @@ class TrainerControllerTest extends TestCase {
         $mockRepository->expects($this->once())
             ->method('save')
             ->with(
-                $this->callback(function($param) use ($trainerId) {
+                $this->callback(function ($param) use ($trainerId) {
                     return $param instanceof Trainer && (
                             $param->getName() === 'Crystalbelle' &&
                             $param->getSpecialty() === 'Agility Training'
@@ -191,14 +200,15 @@ class TrainerControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testUpdateFoundTrainerWithSpecialty() {
+    public function testUpdateFoundTrainerWithSpecialty()
+    {
         $trainer = $this->createTrainer('Ted', 'Tracking');
         $trainerId = $trainer->getId();
         $mockRepository = $this->getMockBuilder(TrainerRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($trainerId) {
+                $this->callback(function ($param) use ($trainerId) {
                     return (string) $param === (string) $trainerId;
                 })
             )
@@ -206,7 +216,7 @@ class TrainerControllerTest extends TestCase {
         $mockRepository->expects($this->once())
             ->method('save')
             ->with(
-                $this->callback(function($param) use ($trainerId) {
+                $this->callback(function ($param) use ($trainerId) {
                     return $param instanceof Trainer && (
                             $param->getName() === 'Ted' &&
                             $param->getSpecialty() === 'Agility'
@@ -233,14 +243,15 @@ class TrainerControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testUpdateFoundTrainerWithInvalidData() {
+    public function testUpdateFoundTrainerWithInvalidData()
+    {
         $ginapher = $this->createTrainer('Ginapher', 'Obedience');
         $trainerId = $ginapher->getId();
         $mockRepository = $this->getMockBuilder(TrainerRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($trainerId) {
+                $this->callback(function ($param) use ($trainerId) {
                     return (string) $param === (string) $trainerId;
                 })
             )
@@ -264,13 +275,14 @@ class TrainerControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testDeleteTrainerFound() {
+    public function testDeleteTrainerFound()
+    {
         $trainerId = Uuid::uuid4();
         $mockRepository = $this->getMockBuilder(TrainerRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('delete')
             ->with(
-                $this->callback(function($param) use($trainerId) {
+                $this->callback(function ($param) use ($trainerId) {
                     return (string) $param === (string) $trainerId;
                 })
             );

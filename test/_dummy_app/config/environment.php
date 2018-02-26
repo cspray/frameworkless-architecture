@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-return function(string $environment) {
+return function (string $environment) {
     $config = [];
 
     switch ($environment) {

@@ -7,16 +7,21 @@ branches:
   only:
     - master
 php:
-  - 7.2
+  - '7.2'
 
 env:
   - APP_ENV=test DB_HOST=127.0.0.1
-before_script:
+
+before_install:
   - composer self-update
-  - composer update --ignore-platform-reqs
+install:
+  - composer update
+before_script:
   - psql -c 'create database archdemo_test;' -U postgres
   - vendor/bin/doctrine orm:schema-tool:create
 script:
   - vendor/bin/phpunit --coverage-clover=coverage.clover
+  - vendor/bin/phpcs --standard=PSR2 -q ./src ./test
+after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+  - php ocular.phar code-coverage:upload --format=php-clover  coverage.clover

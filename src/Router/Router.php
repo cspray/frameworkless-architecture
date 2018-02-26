@@ -12,7 +12,8 @@ namespace Cspray\ArchDemo\Router;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-interface Router {
+interface Router
+{
 
     /**
      * The $regexPattern should match against the path of the ServerRequest's URI,
@@ -37,5 +38,4 @@ interface Router {
      * @return Route[]
      */
     public function getRoutes() : iterable;
-
 }

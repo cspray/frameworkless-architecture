@@ -9,12 +9,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class ControllerActionRequestHandler implements RequestHandlerInterface {
+class ControllerActionRequestHandler implements RequestHandlerInterface
+{
 
     private $router;
     private $injector;
 
-    public function __construct(Router $router, Injector $injector) {
+    public function __construct(Router $router, Injector $injector)
+    {
         $this->router = $router;
         $this->injector = $injector;
     }
@@ -22,7 +24,8 @@ class ControllerActionRequestHandler implements RequestHandlerInterface {
     /**
      * Handle the request and return a response.
      */
-    public function handle(ServerRequestInterface $request): ResponseInterface {
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
         $resolvedRoute = $this->router->match($request);
         $controllerAction = $resolvedRoute->getControllerAction();
         $controller = $this->injector->make($controllerAction->getController());
@@ -30,5 +33,4 @@ class ControllerActionRequestHandler implements RequestHandlerInterface {
 
         return $controller->$action($resolvedRoute->getRequest());
     }
-
 }

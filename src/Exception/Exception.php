@@ -11,4 +11,6 @@ namespace Cspray\ArchDemo\Exception;
 
 use RuntimeException;
 
-class Exception extends RuntimeException {}
+class Exception extends RuntimeException
+{
+}

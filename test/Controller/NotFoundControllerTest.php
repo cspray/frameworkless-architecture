@@ -5,9 +5,11 @@ namespace Cspray\ArchDemo\Test\Controller;
 use Cspray\ArchDemo\Controller\NotFoundController;
 use PHPUnit\Framework\TestCase;
 
-class NotFoundControllerTest extends TestCase {
+class NotFoundControllerTest extends TestCase
+{
 
-    public function testIndex() {
+    public function testIndex()
+    {
         $subject = new NotFoundController();
 
         $response = $subject->index();
@@ -18,5 +20,4 @@ class NotFoundControllerTest extends TestCase {
         $this->assertArraySubset($expected, json_decode((string) $response->getBody(), true));
         $this->assertSame(404, $response->getStatusCode());
     }
-
 }

@@ -10,9 +10,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Zend\Diactoros\Response\JsonResponse;
 
-trait CreateAwareMixin {
+trait CreateAwareMixin
+{
 
-    public function create(ServerRequestInterface $request) : ResponseInterface {
+    public function create(ServerRequestInterface $request) : ResponseInterface
+    {
         $entity = $this->createNewEntity($request);
         $validationResults = $entity->validate();
         if (!$validationResults->isValid()) {
@@ -30,5 +32,4 @@ trait CreateAwareMixin {
     abstract protected function responseForValidationError(ValidationResults $results) : ResponseInterface;
 
     abstract protected function serialize($entity);
-
 }

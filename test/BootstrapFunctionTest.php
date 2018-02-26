@@ -7,30 +7,34 @@ use function Cspray\ArchDemo\bootstrap;
 use Doctrine\DBAL\Types\Type;
 use PHPUnit\Framework\TestCase;
 
-class BootstrapFunctionTest extends TestCase {
+class BootstrapFunctionTest extends TestCase
+{
 
-    public function testBootstrapAddsDoctrineUuidType() {
+    public function testBootstrapAddsDoctrineUuidType()
+    {
         bootstrap('test');
         $this->assertTrue(Type::hasType('uuid'));
     }
 
-    public function testBootstrapAddsDoctrineUuidBinaryType() {
+    public function testBootstrapAddsDoctrineUuidBinaryType()
+    {
         bootstrap('test');
         $this->assertTrue(Type::hasType('uuid_binary'));
     }
 
-    public function testBootstrapHandlesMultipleCallsToDifferentEnvironment() {
+    public function testBootstrapHandlesMultipleCallsToDifferentEnvironment()
+    {
         $injector1 = bootstrap('test');
         $injector2 = bootstrap('development');
 
         $this->assertNotSame($injector1, $injector2);
     }
 
-    public function testBootstrapHandlesMultipleCallsToSameEnvironment() {
+    public function testBootstrapHandlesMultipleCallsToSameEnvironment()
+    {
         $injector1 = bootstrap('test');
         $injector2 = bootstrap('test');
 
         $this->assertSame($injector1, $injector2);
     }
-
 }

@@ -5,9 +5,11 @@ namespace Cspray\ArchDemo\Transformer;
 use Cspray\ArchDemo\Entity\Dog;
 use League\Fractal\TransformerAbstract;
 
-class DogTransformer extends TransformerAbstract {
+class DogTransformer extends TransformerAbstract
+{
 
-    public function transform(Dog $dog) {
+    public function transform(Dog $dog)
+    {
         return [
             'id' => $dog->getId(),
             'name' => $dog->getName(),
@@ -15,5 +17,4 @@ class DogTransformer extends TransformerAbstract {
             'age' => $dog->getAge()
         ];
     }
-
 }

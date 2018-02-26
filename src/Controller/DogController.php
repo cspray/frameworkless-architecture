@@ -11,7 +11,8 @@ use League\Fractal;
 use League\Fractal\TransformerAbstract as FractalTransformer;
 use Psr\Http\Message\ServerRequestInterface;
 
-class DogController extends ApplicationController {
+class DogController extends ApplicationController
+{
 
     use Mixin\IndexAwareMixin;
     use Mixin\ShowAwareMixin;
@@ -19,16 +20,19 @@ class DogController extends ApplicationController {
     use Mixin\UpdateAwareMixin;
     use Mixin\DeleteAwareMixin;
 
-    public function __construct(DogRepository $repository, Fractal\Manager $fractal) {
+    public function __construct(DogRepository $repository, Fractal\Manager $fractal)
+    {
         parent::__construct($repository, $fractal);
     }
 
-    protected function createNewEntity(ServerRequestInterface $request) : Entity {
+    protected function createNewEntity(ServerRequestInterface $request) : Entity
+    {
         $data = $request->getParsedBody()['dog'];
         return new Dog($data['name'], $data['breed'], $data['age']);
     }
 
-    protected function updateExistingEntity(Dog $entity, ServerRequestInterface $request): Entity {
+    protected function updateExistingEntity(Dog $entity, ServerRequestInterface $request): Entity
+    {
         $data = $request->getParsedBody()['dog'];
 
         if (isset($data['name'])) {
@@ -44,8 +48,8 @@ class DogController extends ApplicationController {
 
 
 
-    public function getTransformer(): FractalTransformer {
+    public function getTransformer(): FractalTransformer
+    {
         return new DogTransformer();
     }
-
 }

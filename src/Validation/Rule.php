@@ -2,8 +2,8 @@
 
 namespace Cspray\ArchDemo\Validation;
 
-interface Rule {
+interface Rule
+{
 
     public function passesCheck($value, string $attributeName = null) : Results;
-
 }

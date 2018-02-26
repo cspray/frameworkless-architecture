@@ -5,9 +5,11 @@ namespace Cspray\ArchDemo\Validation;
 
 use Zend\Validator as ZendValidator;
 
-trait ValidatableTrait /* implements Validatable */ {
+trait ValidatableTrait /* implements Validatable */
+{
 
-    public function validate() : Results {
+    public function validate() : Results
+    {
         $rules = $this->validationRuleSet();
         $resultData = [];
         /** @var Rule $rule */
@@ -23,20 +25,22 @@ trait ValidatableTrait /* implements Validatable */ {
         return new class($resultData) implements Results {
             private $resultData;
 
-            public function __construct(array $resultData) {
+            public function __construct(array $resultData)
+            {
                 $this->resultData = $resultData;
             }
 
-            public function isValid(): bool {
+            public function isValid(): bool
+            {
                 return empty($this->resultData);
             }
 
-            public function getErrorMessages(): array {
+            public function getErrorMessages(): array
+            {
                 return $this->resultData;
             }
         };
     }
 
     abstract protected function validationRuleSet() : RuleSet;
-
 }

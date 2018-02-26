@@ -14,11 +14,13 @@ use Doctrine\ORM\Tools\Setup as DoctrineSetup;
 use Doctrine\ORM\EntityManager;
 use League\Fractal;
 
-class ObjectGraph {
+class ObjectGraph
+{
 
     private $envConfig;
 
-    public function __construct(Config\Environment $environmentConfig) {
+    public function __construct(Config\Environment $environmentConfig)
+    {
         $this->envConfig = $environmentConfig;
     }
 
@@ -26,7 +28,8 @@ class ObjectGraph {
      * @return Injector
      * @throws \Auryn\ConfigException
      */
-    public function createContainer() : Injector {
+    public function createContainer() : Injector
+    {
         $injector = new Injector();
         $injector->share($injector);
         $injector->share($this->envConfig);
@@ -39,7 +42,8 @@ class ObjectGraph {
         return $injector;
     }
 
-    private function routerGraph(Injector $injector) {
+    private function routerGraph(Injector $injector)
+    {
         $injector->share(RouteCollector::class);
         $injector->define(RouteCollector::class, [
             'routeParser' => StdRouteParser::class,
@@ -48,14 +52,15 @@ class ObjectGraph {
         $injector->share(Router\Router::class);
         $injector->define(Router\FastRoute\Router::class, [
             'collector' => RouteCollector::class,
-            ':dispatcherCb' => function(array $data) use($injector) {
+            ':dispatcherCb' => function (array $data) use ($injector) {
                 return $injector->make(GcbDispatcher::class, [':data' => $data]);
             }
         ]);
         $injector->alias(Router\Router::class, Router\FastRoute\Router::class);
     }
 
-    private function doctrineGraph(Injector $injector) {
+    private function doctrineGraph(Injector $injector)
+    {
         $dbConfig = $this->envConfig->databaseConfig();
         $params = [
             'driver' => $dbConfig->driver(),
@@ -72,15 +77,16 @@ class ObjectGraph {
         $injector->alias(EntityManagerInterface::class, get_class($entityManager));
     }
 
-    private function fractalGraph(Injector $injector) {
+    private function fractalGraph(Injector $injector)
+    {
         $injector->share(Fractal\Manager::class);
-        $injector->prepare(Fractal\Manager::class, function(Fractal\Manager $manager) {
+        $injector->prepare(Fractal\Manager::class, function (Fractal\Manager $manager) {
             $manager->setSerializer(new Fractal\Serializer\DataArraySerializer());
         });
     }
 
-    private function middlewareGraph(Injector $injector) {
+    private function middlewareGraph(Injector $injector)
+    {
         $injector->share(ControllerActionRequestHandler::class);
     }
-
 }

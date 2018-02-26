@@ -8,9 +8,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid\Uuid;
 use Zend\Diactoros\Response\EmptyResponse;
 
-trait DeleteAwareMixin {
+trait DeleteAwareMixin
+{
 
-    public function delete(ServerRequestInterface $request) : ResponseInterface {
+    public function delete(ServerRequestInterface $request) : ResponseInterface
+    {
         $id = Uuid::fromString($request->getAttribute('id'));
         $this->getRepository()->delete($id);
         return new EmptyResponse();

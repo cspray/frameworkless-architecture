@@ -12,17 +12,23 @@ use Zend\Diactoros\ServerRequest;
 use PHPUnit\Framework\TestCase;
 use ArrayObject;
 
-class ExerciseControllerTest extends TestCase {
+class ExerciseControllerTest extends TestCase
+{
 
-    private function createExercise(string $name, string $description) : Exercise {
+    private function createExercise(string $name, string $description) : Exercise
+    {
         return new Exercise($name, $description);
     }
 
-    public function testIndex() {
+    public function testIndex()
+    {
+        $heelDescription = 'Have your dog walk politely at your side; never lagging behind or pulling on the lead.';
+        $sitDescription = 'Have your dog sit and hold position for an incrementing amount of time.';
+        $comeDescription = 'From a varying distance have your dog come to you.';
         $exercises = [
-            $this->createExercise('Heel', 'Have your dog walk politely at your side; never lagging behind or pulling on the lead.'),
-            $this->createExercise('Sit', 'Have your dog sit and hold position for an incrementing amount of time.'),
-            $this->createExercise('Come', 'From a varying distance have your dog come to you.')
+            $this->createExercise('Heel', $heelDescription),
+            $this->createExercise('Sit', $sitDescription),
+            $this->createExercise('Come', $comeDescription)
         ];
         $mockRepository = $this->getMockBuilder(ExerciseRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())->method('findAll')->willReturn(new ArrayObject($exercises));
@@ -34,15 +40,15 @@ class ExerciseControllerTest extends TestCase {
             'data' => [
                 [
                     'name' => 'Heel',
-                    'description' => 'Have your dog walk politely at your side; never lagging behind or pulling on the lead.'
+                    'description' => $heelDescription
                 ],
                 [
                     'name' => 'Sit',
-                    'description' => 'Have your dog sit and hold position for an incrementing amount of time.'
+                    'description' => $sitDescription
                 ],
                 [
                     'name' => 'Come',
-                    'description' => 'From a varying distance have your dog come to you.'
+                    'description' => $comeDescription
                 ]
             ]
         ];
@@ -50,17 +56,19 @@ class ExerciseControllerTest extends TestCase {
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testShowExerciseFound() {
+    public function testShowExerciseFound()
+    {
         $exerciseId = Uuid::uuid4();
+        $description = 'Stimulate your dog\'s sense of smell and have it track down pungent treats';
         $mockRepository = $this->getMockBuilder(ExerciseRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($exerciseId) {
+                $this->callback(function ($param) use ($exerciseId) {
                     return (string) $param === (string) $exerciseId;
                 })
             )
-            ->willReturn($this->createExercise('Tracking', 'Stimulate your dog\'s sense of smell and have it track down pungent treats'));
+            ->willReturn($this->createExercise('Tracking', $description));
 
         $request = (new ServerRequest())->withAttribute('id', (string) $exerciseId);
 
@@ -71,14 +79,15 @@ class ExerciseControllerTest extends TestCase {
         $expectedJson = [
             'data' => [
                 'name' => 'Tracking',
-                'description' => 'Stimulate your dog\'s sense of smell and have it track down pungent treats'
+                'description' => $description
             ]
         ];
         $this->assertArraySubset($expectedJson, json_decode((string) $response->getBody(), true));
         $this->assertSame(200, $response->getStatusCode());
     }
 
-    public function testShowExerciseNotFound() {
+    public function testShowExerciseNotFound()
+    {
         $exerciseId = Uuid::uuid4();
         $mockRepository = $this->getMockBuilder(ExerciseRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
@@ -101,12 +110,13 @@ class ExerciseControllerTest extends TestCase {
         $this->assertSame(404, $response->getStatusCode());
     }
 
-    public function testCreateValidExercise() {
+    public function testCreateValidExercise()
+    {
         $mockRepository = $this->getMockBuilder(ExerciseRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('save')
             ->with(
-                $this->callback(function($param) {
+                $this->callback(function ($param) {
                     return $param instanceof Exercise && (
                             $param->getName() === 'Stay' &&
                             $param->getDescription() === 'Convince your pooch to hold its position'
@@ -114,7 +124,8 @@ class ExerciseControllerTest extends TestCase {
                 })
             )->willReturn(true);
 
-        $request = (new ServerRequest())->withParsedBody(['exercise' => ['name' => 'Stay', 'description' => 'Convince your pooch to hold its position']]);
+        $parsedBody = ['exercise' => ['name' => 'Stay', 'description' => 'Convince your pooch to hold its position']];
+        $request = (new ServerRequest())->withParsedBody($parsedBody);
         $subject = new ExerciseController($mockRepository, new \League\Fractal\Manager());
 
         $response = $subject->create($request);
@@ -129,7 +140,8 @@ class ExerciseControllerTest extends TestCase {
         $this->assertArraySubset($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testCreateInvalidExercise() {
+    public function testCreateInvalidExercise()
+    {
         $mockRepository = $this->getMockBuilder(ExerciseRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->never())
             ->method('save');
@@ -149,14 +161,16 @@ class ExerciseControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testUpdateFoundExerciseWithName() {
-        $ginapher = $this->createExercise('Agility', 'Improve your dog\'s speed and stimulate them intellectualy with this challenging obstacle course.');
+    public function testUpdateFoundExerciseWithName()
+    {
+        $description = 'Improve your dog\'s speed and stimulate them intellectually with this obstacle course.';
+        $ginapher = $this->createExercise('Agility', $description);
         $exerciseId = $ginapher->getId();
         $mockRepository = $this->getMockBuilder(ExerciseRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($exerciseId) {
+                $this->callback(function ($param) use ($exerciseId) {
                     return (string) $param === (string) $exerciseId;
                 })
             )
@@ -166,11 +180,11 @@ class ExerciseControllerTest extends TestCase {
             ->with(
                 $this->logicalAnd(
                     $this->isInstanceOf(Exercise::class),
-                    $this->callback(function($param) {
+                    $this->callback(function ($param) {
                         return $param->getName() === 'Agility Obstacle';
                     }),
-                    $this->callback(function($param) {
-                        return $param->getDescription() === 'Improve your dog\'s speed and stimulate them intellectualy with this challenging obstacle course.';
+                    $this->callback(function ($param) use ($description) {
+                        return $param->getDescription() === $description;
                     })
                 )
             )
@@ -188,20 +202,21 @@ class ExerciseControllerTest extends TestCase {
             'data' => [
                 'id' => (string) $exerciseId,
                 'name' => 'Agility Obstacle',
-                'description' => 'Improve your dog\'s speed and stimulate them intellectualy with this challenging obstacle course.'
+                'description' => $description
             ]
         ];
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testUpdateFoundExerciseWithDescription() {
-        $exercise = $this->createExercise('Sit', 'Convince your pooch to put its butt on the ground and keep it there.');
+    public function testUpdateFoundExerciseWithDescription()
+    {
+        $exercise = $this->createExercise('Sit', 'Convince the dog to put its butt on the ground and keep it there.');
         $exerciseId = $exercise->getId();
         $mockRepository = $this->getMockBuilder(ExerciseRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($exerciseId) {
+                $this->callback(function ($param) use ($exerciseId) {
                     return (string) $param === (string) $exerciseId;
                 })
             )
@@ -209,7 +224,7 @@ class ExerciseControllerTest extends TestCase {
         $mockRepository->expects($this->once())
             ->method('save')
             ->with(
-                $this->callback(function($param) use ($exerciseId) {
+                $this->callback(function ($param) use ($exerciseId) {
                     return $param instanceof Exercise && (
                             $param->getName() === 'Sit' &&
                             $param->getDescription() === 'Seriously, just keep your dog\'s ass on the ground'
@@ -219,7 +234,7 @@ class ExerciseControllerTest extends TestCase {
             ->willReturn(true);
 
         $request = (new ServerRequest())->withAttribute('id', (string) $exerciseId)->withParsedBody([
-            'exercise' => ['id' => (string) $exerciseId, 'description' => 'Seriously, just keep your dog\'s ass on the ground']
+            'exercise' => ['description' => 'Seriously, just keep your dog\'s ass on the ground']
         ]);
         $subject = new ExerciseController($mockRepository, new \League\Fractal\Manager());
 
@@ -236,14 +251,15 @@ class ExerciseControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testUpdateFoundExerciseWithInvalidData() {
+    public function testUpdateFoundExerciseWithInvalidData()
+    {
         $ginapher = $this->createExercise('Heel', 'Have your dog walk comfortably at your side');
         $exerciseId = $ginapher->getId();
         $mockRepository = $this->getMockBuilder(ExerciseRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('find')
             ->with(
-                $this->callback(function($param) use($exerciseId) {
+                $this->callback(function ($param) use ($exerciseId) {
                     return (string) $param === (string) $exerciseId;
                 })
             )
@@ -267,13 +283,14 @@ class ExerciseControllerTest extends TestCase {
         $this->assertSame($expected, json_decode((string) $response->getBody(), true));
     }
 
-    public function testDeleteExerciseFound() {
+    public function testDeleteExerciseFound()
+    {
         $exerciseId = Uuid::uuid4();
         $mockRepository = $this->getMockBuilder(ExerciseRepository::class)->disableOriginalConstructor()->getMock();
         $mockRepository->expects($this->once())
             ->method('delete')
             ->with(
-                $this->callback(function($param) use($exerciseId) {
+                $this->callback(function ($param) use ($exerciseId) {
                     return (string) $param === (string) $exerciseId;
                 })
             );

@@ -15,7 +15,8 @@ use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\TestCase as DbTestCase;
 use Ramsey\Uuid\Uuid;
 
-class ExerciseRepositoryTest extends DbTestCase {
+class ExerciseRepositoryTest extends DbTestCase
+{
 
     use CrudTest;
 
@@ -29,7 +30,8 @@ class ExerciseRepositoryTest extends DbTestCase {
     private $feedingId;
     private $agilityId;
 
-    public function setUp(): void {
+    public function setUp(): void
+    {
         // not great doing this but best way to make sure we get a valid instance of our doctrine entity manager
         $container = bootstrap('test');
         $this->entityManager = $container->make(EntityManagerInterface::class);
@@ -37,27 +39,33 @@ class ExerciseRepositoryTest extends DbTestCase {
         parent::setUp();
     }
 
-    protected function subject(): object {
+    protected function subject(): object
+    {
         return new ExerciseRepository($this->entityManager);
     }
 
-    protected function tableName(): string {
+    protected function tableName(): string
+    {
         return 'exercises';
     }
 
-    protected function entityClass(): string {
+    protected function entityClass(): string
+    {
         return Exercise::class;
     }
 
-    protected function validEntity() : Entity {
+    protected function validEntity() : Entity
+    {
         return new Exercise('Clicker', 'Use sounds to positively reinforce your dog');
     }
 
-    protected function invalidEntity(): Entity {
+    protected function invalidEntity(): Entity
+    {
         return new Exercise('', '');
     }
 
-    protected function wrongTypeEntity(): Entity {
+    protected function wrongTypeEntity(): Entity
+    {
         return new Dog('', '', 0);
     }
 
@@ -66,7 +74,8 @@ class ExerciseRepositoryTest extends DbTestCase {
      *
      * @return Connection
      */
-    protected function getConnection() {
+    protected function getConnection()
+    {
         return $this->createDefaultDBConnection($this->connection->getWrappedConnection(), 'archdemo_test');
     }
 
@@ -75,10 +84,13 @@ class ExerciseRepositoryTest extends DbTestCase {
      *
      * @return IDataSet
      */
-    protected function getDataSet() {
+    protected function getDataSet()
+    {
         $this->obedienceId = Uuid::uuid4()->toString();
         $this->feedingId = Uuid::uuid4()->toString();
         $this->agilityId = Uuid::uuid4()->toString();
+        $feediingDescription = 'Feeding is a training opportunity!';
+        $feediingDescription .= '.5 cups of dry food, .5 cup of wet and a spoon of greek yogurt.';
         return new ArrayDataSet([
             'exercises' => [
                 [
@@ -89,7 +101,7 @@ class ExerciseRepositoryTest extends DbTestCase {
                 [
                     'id' => $this->feedingId,
                     'name' => 'Feeding',
-                    'description' => 'Feeding is a training opportunity! Large dogs should get 1.5 cups of dry food, .5 cup of wet and a big spoot of greek yogurt.'
+                    'description' => $feediingDescription
                 ],
                 [
                     'id' => $this->agilityId,
@@ -99,5 +111,4 @@ class ExerciseRepositoryTest extends DbTestCase {
             ]
         ]);
     }
-
 }

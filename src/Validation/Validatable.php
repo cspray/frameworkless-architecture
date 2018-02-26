@@ -2,8 +2,8 @@
 
 namespace Cspray\ArchDemo\Validation;
 
-interface Validatable {
+interface Validatable
+{
 
     public function validate() : Results;
-
 }

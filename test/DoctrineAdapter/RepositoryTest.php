@@ -12,17 +12,20 @@ use Cspray\ArchDemo\Entity\Trainer;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
-class RepositoryTest extends TestCase {
+class RepositoryTest extends TestCase
+{
 
     private $entityManager;
 
-    public function setUp()/* The :void return type declaration that should be here would cause a BC issue */ {
+    public function setUp()/* The :void return type declaration that should be here would cause a BC issue */
+    {
         parent::setUp();
         $injector = bootstrap('test');
         $this->entityManager = $injector->make(EntityManagerInterface::class);
     }
 
-    public function entityRepositoryProvider() {
+    public function entityRepositoryProvider()
+    {
         return [
             [Dog::class, DogRepository::class],
             [Exercise::class, ExerciseRepository::class],
@@ -33,10 +36,10 @@ class RepositoryTest extends TestCase {
     /**
      * @dataProvider entityRepositoryProvider
      */
-    public function testEntityManagerRepositoryCorrectType(string $entityClass, string $expectedClass) {
+    public function testEntityManagerRepositoryCorrectType(string $entityClass, string $expectedClass)
+    {
         $actual = $this->entityManager->getRepository($entityClass);
 
         $this->assertInstanceOf($expectedClass, $actual);
     }
-
 }

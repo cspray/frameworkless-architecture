@@ -10,7 +10,8 @@ use League\Fractal;
 use League\Fractal\TransformerAbstract as FractalTransformer;
 use Psr\Http\Message\ServerRequestInterface;
 
-class TrainerController extends ApplicationController {
+class TrainerController extends ApplicationController
+{
 
     use Mixin\IndexAwareMixin;
     use Mixin\ShowAwareMixin;
@@ -18,16 +19,19 @@ class TrainerController extends ApplicationController {
     use Mixin\UpdateAwareMixin;
     use Mixin\DeleteAwareMixin;
 
-    public function __construct(TrainerRepository $repository, Fractal\Manager $fractal) {
+    public function __construct(TrainerRepository $repository, Fractal\Manager $fractal)
+    {
         parent::__construct($repository, $fractal);
     }
 
-    protected function createNewEntity(ServerRequestInterface $request): Entity {
+    protected function createNewEntity(ServerRequestInterface $request): Entity
+    {
         $data = $request->getParsedBody()['trainer'];
         return new Trainer($data['name'], $data['specialty']);
     }
 
-    protected function updateExistingEntity(Trainer $entity, ServerRequestInterface $request): Entity {
+    protected function updateExistingEntity(Trainer $entity, ServerRequestInterface $request): Entity
+    {
         $data = $request->getParsedBody()['trainer'];
         if (isset($data['name'])) {
             $entity = $entity->withName($data['name']);
@@ -40,7 +44,8 @@ class TrainerController extends ApplicationController {
         return $entity;
     }
 
-    protected function getTransformer(): FractalTransformer {
+    protected function getTransformer(): FractalTransformer
+    {
         return new TrainerTransformer();
     }
 }

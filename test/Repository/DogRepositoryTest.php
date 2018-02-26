@@ -16,7 +16,8 @@ use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\TestCase as DbTestCase;
 use Ramsey\Uuid\Uuid;
 
-class DogRepositoryTest extends DbTestCase {
+class DogRepositoryTest extends DbTestCase
+{
 
     use CrudTest;
 
@@ -30,7 +31,8 @@ class DogRepositoryTest extends DbTestCase {
     private $kateId;
     private $chiefId;
 
-    public function setUp(): void {
+    public function setUp(): void
+    {
         // not great doing this but best way to make sure we get a valid instance of our doctrine entity manager
         $container = bootstrap('test');
         $this->entityManager = $container->make(EntityManagerInterface::class);
@@ -38,27 +40,33 @@ class DogRepositoryTest extends DbTestCase {
         parent::setUp();
     }
 
-    protected function subject() : object {
+    protected function subject() : object
+    {
         return new DogRepository($this->entityManager);
     }
 
-    protected function tableName(): string {
+    protected function tableName(): string
+    {
         return 'dogs';
     }
 
-    protected function entityClass() : string {
+    protected function entityClass() : string
+    {
         return Dog::class;
     }
 
-    protected function validEntity(): Entity {
+    protected function validEntity(): Entity
+    {
         return new Dog('Ginapher', 'Boxer', 6);
     }
 
-    protected function invalidEntity() : Entity {
+    protected function invalidEntity() : Entity
+    {
         return new Dog('2385798375', 'whatever', 1);
     }
 
-    protected function wrongTypeEntity(): Entity {
+    protected function wrongTypeEntity(): Entity
+    {
         return new Trainer('', '');
     }
 
@@ -67,7 +75,8 @@ class DogRepositoryTest extends DbTestCase {
      *
      * @return Connection
      */
-    protected function getConnection() {
+    protected function getConnection()
+    {
         return $this->createDefaultDBConnection($this->connection->getWrappedConnection(), 'archdemo_test');
     }
 
@@ -76,7 +85,8 @@ class DogRepositoryTest extends DbTestCase {
      *
      * @return IDataSet
      */
-    protected function getDataSet() {
+    protected function getDataSet()
+    {
         $this->nickId = Uuid::uuid4()->toString();
         $this->kateId = Uuid::uuid4()->toString();
         $this->chiefId = Uuid::uuid4()->toString();
@@ -103,5 +113,4 @@ class DogRepositoryTest extends DbTestCase {
             ]
         ]);
     }
-
 }

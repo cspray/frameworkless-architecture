@@ -10,7 +10,8 @@ use Cspray\ArchDemo\Validation\ZendValidator\RuleHelper as ZendRuleHelper;
 use Ramsey\Uuid\Uuid;
 use Zend\Validator as ZendValidator;
 
-class Dog implements Entity {
+class Dog implements Entity
+{
 
     use ValidatableTrait;
     use ZendRuleHelper;
@@ -20,14 +21,16 @@ class Dog implements Entity {
     private $breed;
     private $age = 0;
 
-    public function __construct(string $name, string $breed, int $ageInYears) {
+    public function __construct(string $name, string $breed, int $ageInYears)
+    {
         $this->id = Uuid::uuid4();
         $this->name = $name;
         $this->breed = $breed;
         $this->age = $ageInYears;
     }
 
-    protected function validationRuleSet(): ValidationRuleSet {
+    protected function validationRuleSet(): ValidationRuleSet
+    {
         return new StdLibRuleSet([
             'name' => $this->createNameRule(),
             'breed' => $this->createBreedRule(),
@@ -35,15 +38,18 @@ class Dog implements Entity {
         ]);
     }
 
-    private function createNameRule() : ValidationRule {
+    private function createNameRule() : ValidationRule
+    {
         return $this->createBadStringRule('name');
     }
 
-    private function createBreedRule() : ValidationRule {
+    private function createBreedRule() : ValidationRule
+    {
         return $this->createBadStringRule('breed');
     }
 
-    private function createAgeRule() : ValidationRule {
+    private function createAgeRule() : ValidationRule
+    {
         $chain = new ZendValidator\ValidatorChain();
         $greaterThan = new ZendValidator\GreaterThan(0);
         $greaterThan->setMessage('age must be greater than %min%');
@@ -56,7 +62,8 @@ class Dog implements Entity {
         return $this->createRuleForZendValidator($chain);
     }
 
-    private function createBadStringRule(string $attribute) : ValidationRule {
+    private function createBadStringRule(string $attribute) : ValidationRule
+    {
         $doBreakChain = true;
         $chain = new ZendValidator\ValidatorChain();
         $stringLength = new ZendValidator\StringLength(['min' => 3, 'max' => 50]);
@@ -70,32 +77,37 @@ class Dog implements Entity {
         return $this->createRuleForZendValidator($chain);
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getBreed() {
+    public function getBreed()
+    {
         return $this->breed;
     }
 
-    public function getAge() {
+    public function getAge()
+    {
         return $this->age;
     }
 
-    public function withName(string $name) : Dog {
+    public function withName(string $name) : Dog
+    {
         $newDog = clone $this;
         $newDog->name = $name;
         return $newDog;
     }
 
-    public function withAgedOneYear() : Dog {
+    public function withAgedOneYear() : Dog
+    {
         $newDog = clone $this;
         $newDog->age++;
         return $newDog;
     }
-
 }

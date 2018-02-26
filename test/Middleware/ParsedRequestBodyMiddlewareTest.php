@@ -11,9 +11,11 @@ use Zend\Diactoros\Response;
 use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\Stream;
 
-class ParsedRequestBodyMiddlewareTest extends TestCase {
+class ParsedRequestBodyMiddlewareTest extends TestCase
+{
 
-    public function testParsingJsonWithContentType() {
+    public function testParsingJsonWithContentType()
+    {
         $expected = ['a' => 1, 'b' => true, 'c' => 'foo'];
         $jsonString = json_encode($expected);
         $body = new Stream('php://temp', 'wb');
@@ -27,7 +29,8 @@ class ParsedRequestBodyMiddlewareTest extends TestCase {
         $this->assertSame($expected, $parsedRequest->getParsedBody());
     }
 
-    public function testParsingJsonDoesNotHappenWithNoContentType() {
+    public function testParsingJsonDoesNotHappenWithNoContentType()
+    {
         $expected = ['a' => 1, 'b' => true, 'c' => 'foo'];
         $jsonString = json_encode($expected);
         $body = new Stream('php://temp', 'wb');
@@ -41,7 +44,8 @@ class ParsedRequestBodyMiddlewareTest extends TestCase {
         $this->assertNull($parsedRequest->getParsedBody());
     }
 
-    public function testParsingNoContentTypeSet() {
+    public function testParsingNoContentTypeSet()
+    {
         $expected = ['a' => 1, 'b' => true, 'c' => 'foo'];
         $jsonString = json_encode($expected);
         $body = new Stream('php://temp', 'wb');
@@ -55,7 +59,8 @@ class ParsedRequestBodyMiddlewareTest extends TestCase {
         $this->assertNull($parsedRequest->getParsedBody());
     }
 
-    private function requestHandler() : RequestHandlerInterface {
+    private function requestHandler() : RequestHandlerInterface
+    {
         return new class implements RequestHandlerInterface {
 
             private $request;
@@ -63,17 +68,16 @@ class ParsedRequestBodyMiddlewareTest extends TestCase {
             /**
              * Handle the request and return a response.
              */
-            public function handle(ServerRequestInterface $request): ResponseInterface {
+            public function handle(ServerRequestInterface $request): ResponseInterface
+            {
                 $this->request = $request;
                 return new Response();
             }
 
-            public function getRequest() : ServerRequestInterface {
+            public function getRequest() : ServerRequestInterface
+            {
                 return $this->request;
             }
         };
     }
-
-
-
 }

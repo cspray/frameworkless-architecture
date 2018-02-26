@@ -5,16 +5,19 @@ namespace Cspray\ArchDemo\Router;
 use Cspray\ArchDemo\Exception\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
-class FriendlyRouter implements Router {
+class FriendlyRouter implements Router
+{
 
     private $mountedPrefix = [];
     private $router;
 
-    public function __construct(Router $router) {
+    public function __construct(Router $router)
+    {
         $this->router = $router;
     }
 
-    private function normalizeControllerActionString(string $prettyString) : ControllerAction {
+    private function normalizeControllerActionString(string $prettyString) : ControllerAction
+    {
         if (substr_count($prettyString, '#') === 0) {
             throw new InvalidArgumentException("An invalid route controller#action was passed, got " . $prettyString);
         }
@@ -22,8 +25,9 @@ class FriendlyRouter implements Router {
         return new ControllerAction($controller, $action);
     }
 
-    public function resource(string $resourceName, string $controllerName) {
-        $this->mount('/' . $resourceName, function(FriendlyRouter $router) use($controllerName) {
+    public function resource(string $resourceName, string $controllerName)
+    {
+        $this->mount('/' . $resourceName, function (FriendlyRouter $router) use ($controllerName) {
             $router->get($router->root(), $controllerName . '#index')
                    ->get('/{id}', $controllerName . '#show')
                    ->post($router->root(), $controllerName . '#create')
@@ -37,7 +41,8 @@ class FriendlyRouter implements Router {
      * @param mixed $handler
      * @return $this
      */
-    public function get(string $pattern, $handler) : self {
+    public function get(string $pattern, $handler) : self
+    {
         $controllerAction = $this->normalizeControllerActionString($handler);
         $this->addRoute('GET', $pattern, $controllerAction);
         return $this;
@@ -48,7 +53,8 @@ class FriendlyRouter implements Router {
      * @param mixed $handler
      * @return $this
      */
-    public function post(string $pattern, $handler) : self {
+    public function post(string $pattern, $handler) : self
+    {
         $controllerAction = $this->normalizeControllerActionString($handler);
         $this->addRoute('POST', $pattern, $controllerAction);
         return $this;
@@ -59,7 +65,8 @@ class FriendlyRouter implements Router {
      * @param mixed $handler
      * @return $this
      */
-    public function put(string $pattern, $handler) : self {
+    public function put(string $pattern, $handler) : self
+    {
         $controllerAction = $this->normalizeControllerActionString($handler);
         $this->addRoute('PUT', $pattern, $controllerAction);
         return $this;
@@ -70,7 +77,8 @@ class FriendlyRouter implements Router {
      * @param mixed $handler
      * @return $this
      */
-    public function delete(string $pattern, $handler) : self {
+    public function delete(string $pattern, $handler) : self
+    {
         $controllerAction = $this->normalizeControllerActionString($handler);
         $this->addRoute('DELETE', $pattern, $controllerAction);
         return $this;
@@ -84,7 +92,8 @@ class FriendlyRouter implements Router {
      * @param callable $cb
      * @return $this
      */
-    public function mount(string $prefix, callable $cb) : self {
+    public function mount(string $prefix, callable $cb) : self
+    {
         $this->mountedPrefix[] = $prefix;
         $cb($this);
         $this->mountedPrefix = [];
@@ -94,14 +103,16 @@ class FriendlyRouter implements Router {
     /**
      * @return string
      */
-    public function root() : string {
+    public function root() : string
+    {
         return $this->isMounted() ? '' : '/';
     }
 
     /**
      * @return bool
      */
-    public function isMounted() : bool {
+    public function isMounted() : bool
+    {
         return !empty($this->mountedPrefix);
     }
 
@@ -113,7 +124,8 @@ class FriendlyRouter implements Router {
      * @param ControllerAction $controllerAction
      * @return void
      */
-    public function addRoute(string $httpMethod, string $regexPattern, ControllerAction $controllerAction) : void {
+    public function addRoute(string $httpMethod, string $regexPattern, ControllerAction $controllerAction) : void
+    {
         if ($this->isMounted()) {
             $regexPattern = implode('', $this->mountedPrefix) . $regexPattern;
         }
@@ -127,14 +139,16 @@ class FriendlyRouter implements Router {
      * @param ServerRequestInterface $request
      * @return ResolvedRoute
      */
-    public function match(ServerRequestInterface $request): ResolvedRoute {
+    public function match(ServerRequestInterface $request): ResolvedRoute
+    {
         return $this->router->match($request);
     }
 
     /**
      * @return Route[]
      */
-    public function getRoutes(): iterable {
+    public function getRoutes(): iterable
+    {
         return $this->router->getRoutes();
     }
 }

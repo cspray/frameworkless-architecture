@@ -8,7 +8,8 @@ use Cspray\ArchDemo\Exception\NotFoundException;
 use PHPUnit\DbUnit\DataSet\ArrayDataSet;
 use Ramsey\Uuid\Uuid;
 
-trait CrudTest {
+trait CrudTest
+{
 
     abstract protected function subject() : object;
 
@@ -22,7 +23,8 @@ trait CrudTest {
 
     abstract protected function wrongTypeEntity() : Entity;
 
-    public function testAllReturnsEveryAvailableEntity() {
+    public function testAllReturnsEveryAvailableEntity()
+    {
         $subject = $this->subject();
         $entities = $subject->findAll();
         $ids = [$this->tableName() => []];
@@ -34,16 +36,19 @@ trait CrudTest {
 
         $expectedDataSet = (new ArrayDataSet($ids))->getTable($this->tableName());
         $actualDataSet = $this->getConnection()->createQueryTable(
-            $this->tableName(), 'SELECT id FROM ' . $this->tableName()
+            $this->tableName(),
+            'SELECT id FROM ' . $this->tableName()
         );
 
         $this->assertTablesEqual($expectedDataSet, $actualDataSet);
     }
 
-    public function testFindEntity() {
+    public function testFindEntity()
+    {
         $subject = $this->subject();
         $table = $this->getConnection()->createQueryTable(
-            $this->tableName(), 'SELECT id FROM ' . $this->tableName()
+            $this->tableName(),
+            'SELECT id FROM ' . $this->tableName()
         );
         $id = $table->getValue(0, 'id');
 
@@ -53,7 +58,8 @@ trait CrudTest {
         $this->assertSame($id, (string) $entity->getId());
     }
 
-    public function testFindEntityNotFound() {
+    public function testFindEntityNotFound()
+    {
         $subject = $this->subject();
         $randomId = Uuid::uuid4();
         $this->expectException(NotFoundException::class);
@@ -61,35 +67,41 @@ trait CrudTest {
         $subject->find($randomId);
     }
 
-    public function testSaveValidEntity() {
+    public function testSaveValidEntity()
+    {
         $subject = $this->subject();
         $originalRowCount = $this->getConnection()->getRowCount($this->tableName());
         $this->assertTrue($subject->save($this->validEntity()));
         $this->assertSame($originalRowCount + 1, $this->getConnection()->getRowCount($this->tableName()));
     }
 
-    public function testSaveInvalidEntity() {
+    public function testSaveInvalidEntity()
+    {
         $subject = $this->subject();
         $originalRowCount = $this->getConnection()->getRowCount($this->tableName());
         $this->assertFalse($subject->save($this->invalidEntity()));
         $this->assertSame($originalRowCount, $this->getConnection()->getRowCount($this->tableName()));
     }
 
-    public function testSaveWrongTypeEntity() {
+    public function testSaveWrongTypeEntity()
+    {
         $subject = $this->subject();
         $entity = $this->wrongTypeEntity();
 
+        $msg = 'Expected an entity with type ' . $this->entityClass() . ' but got ' . get_class($entity);
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Expected an entity with type ' . $this->entityClass() . ' but got ' . get_class($entity));
+        $this->expectExceptionMessage($msg);
 
         $subject->save($entity);
     }
 
-    public function testDeleteEntityFound() {
+    public function testDeleteEntityFound()
+    {
         $subject = $this->subject();
         $originalRowCount = $this->getConnection()->getRowCount($this->tableName());
         $table = $this->getConnection()->createQueryTable(
-            $this->tableName(), 'SELECT id FROM ' . $this->tableName()
+            $this->tableName(),
+            'SELECT id FROM ' . $this->tableName()
         );
         $id = $table->getValue(0, 'id');
 
@@ -98,12 +110,12 @@ trait CrudTest {
         $this->assertSame($originalRowCount - 1, $this->getConnection()->getRowCount($this->tableName()));
     }
 
-    public function testDeleteEntityNotFound() {
+    public function testDeleteEntityNotFound()
+    {
         $subject = $this->subject();
         $originalRowCount = $this->getConnection()->getRowCount($this->tableName());
         $subject->delete(Uuid::uuid4());
 
         $this->assertSame($originalRowCount, $this->getConnection()->getRowCount($this->tableName()));
     }
-
 }

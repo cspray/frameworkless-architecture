@@ -4,6 +4,7 @@ namespace Cspray\ArchDemo\DoctrineAdapter;
 
 use Doctrine\ORM\EntityRepository;
 
-class TrainerRepository extends EntityRepository {
+class TrainerRepository extends EntityRepository
+{
 
 }

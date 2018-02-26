@@ -6,7 +6,8 @@ use Cspray\ArchDemo\Entity\Entity;
 use Ramsey\Uuid\UuidInterface;
 use Traversable;
 
-interface Repository {
+interface Repository
+{
 
     public function find(UuidInterface $uuid) : Entity;
 
@@ -15,5 +16,4 @@ interface Repository {
     public function save(Entity $entity) : bool;
 
     public function delete(UuidInterface $uuid) : void;
-
 }

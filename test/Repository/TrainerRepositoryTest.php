@@ -16,7 +16,8 @@ use PHPUnit\DbUnit\DataSet\IDataSet;
 use PHPUnit\DbUnit\TestCase as DbTestCase;
 use Ramsey\Uuid\Uuid;
 
-class TrainerRepositoryTest extends DbTestCase {
+class TrainerRepositoryTest extends DbTestCase
+{
 
     use CrudTest;
 
@@ -30,7 +31,8 @@ class TrainerRepositoryTest extends DbTestCase {
     private $sarahId;
     private $chrisId;
 
-    public function setUp(): void {
+    public function setUp(): void
+    {
         // not great doing this but best way to make sure we get a valid instance of our doctrine entity manager
         $container = bootstrap('test');
         $this->entityManager = $container->make(EntityManagerInterface::class);
@@ -38,27 +40,33 @@ class TrainerRepositoryTest extends DbTestCase {
         parent::setUp();
     }
 
-    protected function subject() : object {
+    protected function subject() : object
+    {
         return new TrainerRepository($this->entityManager);
     }
 
-    protected function tableName(): string {
+    protected function tableName(): string
+    {
         return 'trainers';
     }
 
-    protected function entityClass(): string {
+    protected function entityClass(): string
+    {
         return Trainer::class;
     }
 
-    protected function validEntity(): Entity {
+    protected function validEntity(): Entity
+    {
         return new Trainer('Dyana', 'Clicker training');
     }
 
-    protected function invalidEntity(): Entity {
+    protected function invalidEntity(): Entity
+    {
         return new Trainer('2385798375', 'Whatever');
     }
 
-    protected function wrongTypeEntity(): Entity {
+    protected function wrongTypeEntity(): Entity
+    {
         return new Dog('', '', 0);
     }
 
@@ -67,7 +75,8 @@ class TrainerRepositoryTest extends DbTestCase {
      *
      * @return Connection
      */
-    protected function getConnection() {
+    protected function getConnection()
+    {
         return $this->createDefaultDBConnection($this->connection->getWrappedConnection(), 'archdemo_test');
     }
 
@@ -76,7 +85,8 @@ class TrainerRepositoryTest extends DbTestCase {
      *
      * @return IDataSet
      */
-    protected function getDataSet() {
+    protected function getDataSet()
+    {
         $this->charlesId = Uuid::uuid4()->toString();
         $this->sarahId = Uuid::uuid4()->toString();
         $this->chrisId = Uuid::uuid4()->toString();
@@ -100,5 +110,4 @@ class TrainerRepositoryTest extends DbTestCase {
             ]
         ]);
     }
-
 }

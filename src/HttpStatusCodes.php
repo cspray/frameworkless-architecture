@@ -8,7 +8,8 @@ declare(strict_types = 1);
 
 namespace Cspray\ArchDemo;
 
-abstract class HttpStatusCodes {
+abstract class HttpStatusCodes
+{
 
     // INFORMATIONAL CODES
     const CONTINUE = 100;
@@ -77,5 +78,4 @@ abstract class HttpStatusCodes {
     const INSUFFICIENT_STORAGE = 507;
     const LOOP_DETECTED = 508;
     const NETWORK_AUTHENTICATION_REQUIRED = 511;
-
 }

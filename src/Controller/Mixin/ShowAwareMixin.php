@@ -8,9 +8,11 @@ use Psr\Http\Message\ServerRequestInterface;
 use Ramsey\Uuid\Uuid;
 use Zend\Diactoros\Response\JsonResponse;
 
-trait ShowAwareMixin {
+trait ShowAwareMixin
+{
 
-    public function show(ServerRequestInterface $request) : ResponseInterface {
+    public function show(ServerRequestInterface $request) : ResponseInterface
+    {
         $uuid = Uuid::fromString($request->getAttribute('id'));
         $entity = $this->getRepository()->find($uuid);
         return new JsonResponse($this->serialize($entity));
@@ -19,5 +21,4 @@ trait ShowAwareMixin {
     abstract protected function getRepository() : Repository;
 
     abstract protected function serialize($entity);
-
 }

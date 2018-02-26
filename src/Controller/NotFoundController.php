@@ -6,10 +6,11 @@ use Cspray\ArchDemo\HttpStatusCodes;
 use Psr\Http\Message\ResponseInterface;
 use Zend\Diactoros\Response\JsonResponse;
 
-class NotFoundController {
+class NotFoundController
+{
 
-    public function index() : ResponseInterface {
+    public function index() : ResponseInterface
+    {
         return new JsonResponse(['message' => 'Not Found'], HttpStatusCodes::NOT_FOUND);
     }
-
 }

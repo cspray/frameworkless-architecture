@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Cspray\ArchDemo\Router;
 
-
-class Route {
+class Route
+{
 
     private $method;
     private $pattern;
@@ -22,7 +22,8 @@ class Route {
      * @param string $pattern
      * @param ControllerAction $controllerAction
      */
-    public function __construct(string $method, string $pattern, ControllerAction $controllerAction) {
+    public function __construct(string $method, string $pattern, ControllerAction $controllerAction)
+    {
         $this->method = $method;
         $this->pattern = $pattern;
         $this->controllerAction = $controllerAction;
@@ -31,35 +32,39 @@ class Route {
     /**
      * @return string
      */
-    public function getMethod() : string {
+    public function getMethod() : string
+    {
         return $this->method;
     }
 
     /**
      * @return string
      */
-    public function getPattern() : string {
+    public function getPattern() : string
+    {
         return $this->pattern;
     }
 
     /**
      * @return mixed
      */
-    public function getControllerAction() : ControllerAction {
+    public function getControllerAction() : ControllerAction
+    {
         return $this->controllerAction;
     }
 
     /**
      * @return string
      */
-    public function __toString() : string {
+    public function __toString() : string
+    {
         $format = "%s\t%s\t\t%s";
         $handler = $this->getNormalizedHandler($this->controllerAction);
         return sprintf($format, $this->method, $this->pattern, $handler);
     }
 
-    private function getNormalizedHandler(ControllerAction $controllerAction) : string {
+    private function getNormalizedHandler(ControllerAction $controllerAction) : string
+    {
         return $controllerAction->getController() . '#' . $controllerAction->getAction();
     }
-
 }

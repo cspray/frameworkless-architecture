@@ -10,7 +10,8 @@ use Cspray\ArchDemo\Validation\ZendValidator\RuleHelper as ZendRuleHelper;
 use Ramsey\Uuid\Uuid;
 use Zend\Validator as ZendValidator;
 
-class Trainer implements Entity {
+class Trainer implements Entity
+{
 
     use ValidatableTrait;
     use ZendRuleHelper;
@@ -19,19 +20,22 @@ class Trainer implements Entity {
     private $name;
     private $specialty;
 
-    public function __construct(string $name, string $specialty) {
+    public function __construct(string $name, string $specialty)
+    {
         $this->id = Uuid::uuid4();
         $this->name = $name;
         $this->specialty = $specialty;
     }
 
-    protected function validationRuleSet(): ValidationRuleSet {
+    protected function validationRuleSet(): ValidationRuleSet
+    {
         return new StdLibRuleSet([
             'name' => $this->createNameRule(),
             'specialty' => $this->createSpecialtyRule()
         ]);
     }
-    private function createNameRule() : ValidationRule {
+    private function createNameRule() : ValidationRule
+    {
         $doBreakChain = true;
         $chain = new ZendValidator\ValidatorChain();
         $stringLength = new ZendValidator\StringLength(['min' => 3, 'max' => 50]);
@@ -45,35 +49,40 @@ class Trainer implements Entity {
         return $this->createRuleForZendValidator($chain);
     }
 
-    private function createSpecialtyRule() : ValidationRule {
+    private function createSpecialtyRule() : ValidationRule
+    {
         $stringLength = new ZendValidator\StringLength(['min' => 5, 'max' => 500]);
         $stringLength->setMessage('specialty must have a length between %min% and %max%');
 
         return $this->createRuleForZendValidator($stringLength);
     }
 
-    public function getId() {
+    public function getId()
+    {
         return $this->id;
     }
 
-    public function getName() {
+    public function getName()
+    {
         return $this->name;
     }
 
-    public function getSpecialty() {
+    public function getSpecialty()
+    {
         return $this->specialty;
     }
 
-    public function withName(string $name) : Trainer {
+    public function withName(string $name) : Trainer
+    {
         $newTrainer = clone $this;
         $newTrainer->name = $name;
         return $newTrainer;
     }
 
-    public function withSpecialty(string $specialty) : Trainer {
+    public function withSpecialty(string $specialty) : Trainer
+    {
         $newTrainer = clone $this;
         $newTrainer->specialty = $specialty;
         return $newTrainer;
     }
-
 }

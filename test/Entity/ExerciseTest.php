@@ -6,46 +6,55 @@ use Cspray\ArchDemo\Entity\Exercise;
 use Cspray\ArchDemo\Middleware\ParsedRequestBodyMiddleware;
 use PHPUnit\Framework\TestCase;
 
-class ExerciseTest extends TestCase {
+class ExerciseTest extends TestCase
+{
     /**
      * @var Exercise
      */
     private $subject;
 
-    public function setUp() {
+    public function setUp()
+    {
         parent::setUp();
         $this->subject = new Exercise('', '');
     }
 
-    public function testWithName() {
+    public function testWithName()
+    {
         $exercise = $this->subject->withName('Feeding');
 
         $this->assertEmpty($this->subject->getName());
         $this->assertSame('Feeding', $exercise->getName());
     }
 
-    public function testWithDescription() {
-        $exercise = $this->subject->withDescription('Feed your pooch 1.5 cups of dry food mixed with 1/2 cup of wet food and 1 spoonful of greek yogurt.');
+    public function testWithDescription()
+    {
+        $description = 'Feed your pooch 1.5 cups dry food mixed, .5 cup of wet food and 1 spoonful of greek yogurt.';
+        $exercise = $this->subject->withDescription($description);
 
         $this->assertEmpty($this->subject->getDescription());
-        $this->assertSame('Feed your pooch 1.5 cups of dry food mixed with 1/2 cup of wet food and 1 spoonful of greek yogurt.', $exercise->getDescription());
+        $this->assertSame($description, $exercise->getDescription());
     }
 
-    public function testAllTogether() {
+    public function testAllTogether()
+    {
         $exercise = $this->subject->withName('Heel')->withDescription('Have your dog walk calmly at your side.');
 
         $this->assertSame('Heel', $exercise->getName());
         $this->assertSame('Have your dog walk calmly at your side.', $exercise->getDescription());
     }
 
-    public function testValidExercise() {
-        $exercise = new Exercise('My Exercise', 'The description of my exercise. This can be up to 500 characters long and should be an informative paragraph.');
+    public function testValidExercise()
+    {
+        $description = 'The description of my exercise. This can be up to 500 characters long.';
+        $exercise = new Exercise('My Exercise', $description);
         $results = $exercise->validate();
 
         $this->assertTrue($results->isValid());
     }
 
-    public function invalidExerciseNameProvider() {
+    public function invalidExerciseNameProvider()
+    {
         return [
             ['', 'name must have a length between 3 and 50'],
             ['a', 'name must have a length between 3 and 50'],
@@ -57,7 +66,8 @@ class ExerciseTest extends TestCase {
     /**
      * @dataProvider invalidExerciseNameProvider
      */
-    public function testInvalidExerciseName(string $actualName, string $expectedError) {
+    public function testInvalidExerciseName(string $actualName, string $expectedError)
+    {
         $exercise = new Exercise($actualName, 'A description');
         $results = $exercise->validate();
 
@@ -70,7 +80,8 @@ class ExerciseTest extends TestCase {
         $this->assertSame($expected, $results->getErrorMessages());
     }
 
-    public function invalidExerciseDescriptionProvider() {
+    public function invalidExerciseDescriptionProvider()
+    {
         return [
             ['', 'description must have a length between 10 and 500'],
             [str_repeat('x', 600), 'description must have a length between 10 and 500']
@@ -80,7 +91,8 @@ class ExerciseTest extends TestCase {
     /**
      * @dataProvider invalidExerciseDescriptionProvider
      */
-    public function testInvalidExerciseDescription(string $actualDescription, string $expectedError) {
+    public function testInvalidExerciseDescription(string $actualDescription, string $expectedError)
+    {
         $exercise = new Exercise('Dux', $actualDescription);
         $results = $exercise->validate();
 
@@ -92,5 +104,4 @@ class ExerciseTest extends TestCase {
         ];
         $this->assertSame($expected, $results->getErrorMessages());
     }
-
 }
