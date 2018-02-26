@@ -6,12 +6,14 @@ use Cspray\ArchDemo\Validation\RuleSet as ValidationRuleset;
 use Cspray\ArchDemo\Validation\Rule as ValidationRule;
 use Cspray\ArchDemo\Validation\StdLib\RuleSet as StdLibRuleSet;
 use Cspray\ArchDemo\Validation\ValidatableTrait;
+use Cspray\ArchDemo\Validation\ZendValidator\RuleHelper as ZendRuleHelper;
 use Ramsey\Uuid\Uuid;
 use Zend\Validator as ZendValidator;
 
 class Exercise implements Entity {
 
     use ValidatableTrait;
+    use ZendRuleHelper;
 
     private $id;
     private $name;
