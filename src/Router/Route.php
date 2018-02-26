@@ -13,30 +13,19 @@ namespace Cspray\ArchDemo\Router;
 
 class Route {
 
-    private $pattern;
     private $method;
+    private $pattern;
     private $controllerAction;
 
     /**
-     * @param string $pattern
      * @param string $method
+     * @param string $pattern
      * @param ControllerAction $controllerAction
      */
-    public function __construct(
-        string $pattern,
-        string $method,
-        ControllerAction $controllerAction
-    ) {
-        $this->pattern = $pattern;
+    public function __construct(string $method, string $pattern, ControllerAction $controllerAction) {
         $this->method = $method;
+        $this->pattern = $pattern;
         $this->controllerAction = $controllerAction;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPattern() : string {
-        return $this->pattern;
     }
 
     /**
@@ -44,6 +33,13 @@ class Route {
      */
     public function getMethod() : string {
         return $this->method;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPattern() : string {
+        return $this->pattern;
     }
 
     /**

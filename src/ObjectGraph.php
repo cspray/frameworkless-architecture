@@ -5,7 +5,6 @@ namespace Cspray\ArchDemo;
 
 use Auryn\Injector;
 use Cspray\ArchDemo\Middleware\ControllerActionRequestHandler;
-use Cspray\ArchDemo\Model\DogModel;
 use Doctrine\ORM\EntityManagerInterface;
 use FastRoute\RouteParser\Std as StdRouteParser;
 use FastRoute\RouteCollector;
@@ -46,14 +45,14 @@ class ObjectGraph {
             'routeParser' => StdRouteParser::class,
             'dataGenerator' => GcbGenerator::class
         ]);
-        $injector->share(Router\FastRouteRouter::class);
-        $injector->define(Router\FastRouteRouter::class, [
+        $injector->share(Router\Router::class);
+        $injector->define(Router\FastRoute\Router::class, [
             'collector' => RouteCollector::class,
             ':dispatcherCb' => function(array $data) use($injector) {
                 return $injector->make(GcbDispatcher::class, [':data' => $data]);
             }
         ]);
-        $injector->alias(Router\Router::class, Router\FastRouteRouter::class);
+        $injector->alias(Router\Router::class, Router\FastRoute\Router::class);
     }
 
     private function doctrineGraph(Injector $injector) {

@@ -4,7 +4,7 @@ namespace Cspray\ArchDemo\Repository;
 
 use Cspray\ArchDemo\Entity\Dog;
 
-class DogRepository extends DoctrineAwareRepository implements Repository {
+class DogRepository extends Doctrine\BaseRepository implements Repository {
 
     protected function getEntityClass(): string {
         return Dog::class;

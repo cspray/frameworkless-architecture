@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Cspray\ArchDemo\Repository;
+namespace Cspray\ArchDemo\Repository\Doctrine;
 
+use Cspray\ArchDemo\Repository\Repository;
 use Cspray\ArchDemo\Entity\Entity;
 use Cspray\ArchDemo\Exception\InvalidTypeException;
 use Cspray\ArchDemo\Exception\NotFoundException;
@@ -10,7 +11,7 @@ use Ramsey\Uuid\UuidInterface;
 use ArrayObject;
 use Traversable;
 
-abstract class DoctrineAwareRepository implements Repository {
+abstract class BaseRepository implements Repository {
 
     private $entityManager;
     private $repository;

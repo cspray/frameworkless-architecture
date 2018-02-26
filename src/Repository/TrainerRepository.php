@@ -4,7 +4,7 @@ namespace Cspray\ArchDemo\Repository;
 
 use Cspray\ArchDemo\Entity\Trainer;
 
-class TrainerRepository extends DoctrineAwareRepository implements Repository {
+class TrainerRepository extends Doctrine\BaseRepository implements Repository {
 
     protected function getEntityClass(): string {
         return Trainer::class;

@@ -17,7 +17,7 @@ class RouteTest extends TestCase {
 
     function routeProvider() {
         return [
-            [new Route('/handler-string', 'GET', new ControllerAction('controller', 'action')), "GET\t/handler-string\t\tcontroller#action"],
+            [new Route('GET', '/handler-string', new ControllerAction('controller', 'action')), "GET\t/handler-string\t\tcontroller#action"],
 
         ];
     }

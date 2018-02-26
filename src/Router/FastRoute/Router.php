@@ -11,28 +11,28 @@ declare(strict_types=1);
  * @see https://github.com/nikic/FastRoute
  */
 
-namespace Cspray\ArchDemo\Router;
+namespace Cspray\ArchDemo\Router\FastRoute;
 
-use Cspray\ArchDemo\{
-    Controller\MethodNotAllowedController as MethodNotAllowedController,
-    Controller\NotFoundController as NotFoundController,
-    HttpStatusCodes,
-    Exception\InvalidArgumentException,
-    Exception\InvalidTypeException
-};
-use FastRoute\{Dispatcher, RouteCollector};
-use Psr\Http\Message\{
-    ServerRequestInterface
-};
+use Cspray\ArchDemo\Router\ControllerAction;
+use Cspray\ArchDemo\Router\ResolvedRoute;
+use Cspray\ArchDemo\Router\Route;
+use Cspray\ArchDemo\Router\Router as ArchDemoRouter;
+use Cspray\ArchDemo\Controller\MethodNotAllowedController;
+use Cspray\ArchDemo\Controller\NotFoundController;
+use Cspray\ArchDemo\HttpStatusCodes;
+use Cspray\ArchDemo\Exception\InvalidArgumentException;
+use Cspray\ArchDemo\Exception\InvalidTypeException;
+use FastRoute\Dispatcher;
+use FastRoute\RouteCollector;
+use Psr\Http\Message\ServerRequestInterface;
 
-class FastRouteRouter implements Router {
+class Router implements ArchDemoRouter {
 
     private $dispatcherCb;
     private $collector;
     private $routes = [];
     private $notFoundControllerAction;
     private $methodNotFoundControllerAction;
-    private $mountedPrefix = [];
 
     /**
      * Pass a HandlerResolver, a FastRoute\RouteCollector and a callback that
@@ -51,95 +51,15 @@ class FastRouteRouter implements Router {
         $this->dispatcherCb = $dispatcherCb;
     }
 
-    private function normalizeControllerActionString(string $prettyString) : ControllerAction {
-        if (substr_count($prettyString, '#') === 0) {
-            throw new InvalidArgumentException("An invalid route controller#action was passed, got " . $prettyString);
-        }
-        list($controller, $action) = explode('#', $prettyString);
-        return new ControllerAction($controller, $action);
-    }
-    /**
-     * @param string $pattern
-     * @param mixed $handler
-     * @return $this
-     */
-    public function get(string $pattern, $handler) : self {
-        $controllerAction = $this->normalizeControllerActionString($handler);
-        return $this->addRoute('GET', $pattern, $controllerAction);
-    }
-
-    /**
-     * @param string $pattern
-     * @param mixed $handler
-     * @return $this
-     */
-    public function post(string $pattern, $handler) : self {
-        $controllerAction = $this->normalizeControllerActionString($handler);
-        return $this->addRoute('POST', $pattern, $controllerAction);
-    }
-
-    /**
-     * @param string $pattern
-     * @param mixed $handler
-     * @return $this
-     */
-    public function put(string $pattern, $handler) : self {
-        $controllerAction = $this->normalizeControllerActionString($handler);
-        return $this->addRoute('PUT', $pattern, $controllerAction);
-    }
-
-    /**
-     * @param string $pattern
-     * @param mixed $handler
-     * @return $this
-     */
-    public function delete(string $pattern, $handler) : self {
-        $controllerAction = $this->normalizeControllerActionString($handler);
-        return $this->addRoute('DELETE', $pattern, $controllerAction);
-    }
-
-    /**
-     * Allows you to easily prefix routes to composer complex URL patterns without
-     * constantly retyping pattern matches.
-     *
-     * @param string $prefix
-     * @param callable $cb
-     * @return $this
-     */
-    public function mount(string $prefix, callable $cb) : self {
-        $this->mountedPrefix[] = $prefix;
-        $cb($this);
-        $this->mountedPrefix = [];
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function root() : string {
-        return $this->isMounted() ? '' : '/';
-    }
-
-    /**
-     * @return bool
-     */
-    public function isMounted() : bool {
-        return !empty($this->mountedPrefix);
-    }
-
     /**
      * @param string $method
      * @param string $pattern
      * @param ControllerAction $controllerAction
-     * @return $this
+     * @return void
      */
-    public function addRoute(string $method, string $pattern, ControllerAction $controllerAction) : self {
-        if ($this->isMounted()) {
-            $pattern = implode('', $this->mountedPrefix) . $pattern;
-        }
-        $this->routes[] = new Route($pattern, $method, $controllerAction);
+    public function addRoute(string $method, string $pattern, ControllerAction $controllerAction) : void {
+        $this->routes[] = new Route($method, $pattern, $controllerAction);
         $this->collector->addRoute($method, $pattern, $controllerAction);
-        return $this;
     }
 
     /**
