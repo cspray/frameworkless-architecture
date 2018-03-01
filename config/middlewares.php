@@ -14,6 +14,7 @@ use Monolog\Handler\StreamHandler;
 use Middlewares\AccessLog;
 
 return function(MiddlewareCollection $middlewares, Injector $injector) {
+    /* !! DO NOT CHANGE THIS OR YOUR APPLICATION MAY NOT WORK PROPERLY !! */
     $corsMiddleware = $injector->make(CorsMiddleware::class);
     $parsedRequestBodyMiddleware = $injector->make(ParsedRequestBodyMiddleware::class);
 
@@ -28,4 +29,7 @@ return function(MiddlewareCollection $middlewares, Injector $injector) {
     $middlewares->append($whoopsMiddleware);
     $middlewares->append($corsMiddleware);
     $middlewares->append($parsedRequestBodyMiddleware);
+    /* !! DO NOT CHANGE THIS OR YOUR APPLICATION MAY NOT WORK PROPERLY !! */
+
+    /* GOOD TO GO! ADD YOUR OWN MIDDLEWARE AFTER THIS */
 };

@@ -12,7 +12,6 @@ $config = new \Psy\Configuration([
 
 $shell = new \Psy\Shell($config);
 $shell->setScopeVariables([
-    'injector' => $injector,
-    'dogModel' => $injector->make(\Cspray\ArchDemo\Model\DogModel::class)
+    'injector' => $injector
 ]);
 $shell->run();

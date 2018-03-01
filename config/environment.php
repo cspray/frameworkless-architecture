@@ -7,7 +7,6 @@ return function(string $environment = 'development') {
         case 'development':
             $config['db'] = [
                 'host' => 'postgres',
-                'port' => 5433,
                 'name' => 'archdemo',
                 'user' => 'postgres',
                 'pass' => '',
